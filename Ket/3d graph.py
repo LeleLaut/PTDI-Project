@@ -10,8 +10,8 @@ def parabola_func(x, y):
     return a * x**2 + b * y**2 + c
 
 # Rentang waktu dan jumlah langkah
-time_steps = 100
-t = np.linspace(0, 10, time_steps)
+time_steps = 50
+t = np.linspace(0, 100, time_steps)
 
 # Rentang koordinat x dan y
 x_range = np.linspace(0, 100, time_steps)
@@ -31,11 +31,11 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 # Tambahkan titik awal (0, 0, 0)
-ax.scatter([0], [0], [0], color='red', label='Titik Awal (0, 0, 0)')
+#ax.scatter([0], [0], [0], color='red', label='Titik Awal (0, 0, 0)')
 
 # Plot garis gerak parabola
 for i in range(time_steps):
-    ax.plot([X[i, i]], [Y[i, i]], [Z[i, i]], 'bo', markersize=4)  # Titik pergerakan
+    ax.plot([X[i, 0]], [Y[i, i]], [Z[i, i]], 'bo', markersize=4)  # Titik pergerakan
     #ax.plot(X[:i, i], Y[:i, i], Z[:i, i], color='blue', alpha=0.5)  # Garis pergerakan
 
 # Tambahkan label sumbu
