@@ -19,7 +19,9 @@ def generate_random_data(timestamp):
         for i in range(1):
             ketinggian = random.randint(0, 100)
             pitch = random.randint(-20, 20)
-            file.write(f"{ketinggian}, {timestamp}, {pitch}\n")
+            roll = random.randint(-20, 20)
+            yaw = random.randint(-20, 20)
+            file.write(f"{ketinggian}, {timestamp}, {pitch}, {roll}, {yaw}\n")
         print(ketinggian)
 
 def animate(i):
@@ -28,19 +30,23 @@ def animate(i):
     xs = []
     ys = []
     zs = []
+    vs = []
+    ws = []
     for line in lines:
         if len(line) > 1:
-            y, x, z = line.split(',')
+            y, x, z, v, w = line.split(',')
             xs.append(float(x))
             ys.append(float(y))
             zs.append(float(z))
+            vs.append(float(v))
+            ws.append(float(w))
     # print (xs + ys + zs)
     ax1.clear()
     ax1.plot(xs, ys)
     ax1.set_ylabel("Ketinggian")
     ax1.set_xlabel("TimeStamp (s)")
     ax2.clear()
-    ax2.plot(xs, zs)
+    ax2.plot(xs, zs, xs, ws, xs, vs)
     ax2.set_ylabel("pitch")
     ax2.set_xlabel("TimeStamp (s)")
     #plt.savefig("Hasil_Update_PNG.png")

@@ -14,7 +14,7 @@ time_steps = 100
 t = np.linspace(0, 10, time_steps)
 
 # Rentang koordinat x dan y
-x_range = np.linspace(-10, 10, time_steps)
+x_range = np.linspace(0, 100, time_steps)
 y_range = np.linspace(-10, 10, time_steps)
 
 # Membuat grid untuk x dan y
@@ -23,9 +23,15 @@ X, Y = np.meshgrid(x_range, y_range)
 # Menghitung ketinggian (z) untuk setiap titik pada setiap waktu t
 Z = parabola_func(X, Y)
 
+# Menggeser ketinggian (Z) sehingga parabola dimulai dari (0, 0, 0)
+Z -= parabola_func(0, 0)
+
 # Membuat visualisasi 3D
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
+
+# Tambahkan titik awal (0, 0, 0)
+ax.scatter([0], [0], [0], color='red', label='Titik Awal (0, 0, 0)')
 
 # Plot garis gerak parabola
 for i in range(time_steps):
@@ -37,8 +43,9 @@ ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')
 
-# Tambahkan judul
+# Tambahkan judul dan legenda
 plt.title('Gerak Parabola Sebagai Garis dalam Koordinat 3D')
+ax.legend()
 
 # Tampilkan plot
 plt.show()
