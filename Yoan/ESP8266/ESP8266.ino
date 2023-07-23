@@ -15,7 +15,6 @@ Serial.begin(115200);
   Serial.print("Connecting");
 
   while( WiFi.status() != WL_CONNECTED ){
-      Serial.print(".");
       delay(500);        
   }
 

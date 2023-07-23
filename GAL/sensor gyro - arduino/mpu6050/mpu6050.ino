@@ -25,16 +25,16 @@ void setup()
 void loop()
 {
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-  data.X = map(ax, -17000, 17000, 0, 255); // X axis data
-  data.Y = map(ay, -17000, 17000, 0, 255); 
-  data.Z = map(az, -17000, 17000, 0, 255);  // Y axis data
+  data.X = map(ax, -17000, 17000, -180, 180); // X axis data
+  data.Y = map(ay, -17000, 17000, -180, 180); 
+  data.Z = map(az, -17000, 17000, -180, 180);  // Y axis data
   delay(1000);
-  Serial.print("Axis X = ");
+  Serial.print("Axis X1 = ");
   Serial.print(data.X);
   Serial.print("  ");
-  Serial.print("Axis Y = ");
+  Serial.print("Axis Y1 = ");
   Serial.print(data.Y);
   Serial.print("  ");
-  Serial.print("Axis Z  = ");
+  Serial.print("Axis Z1 = ");
   Serial.println(data.Z);
 }
