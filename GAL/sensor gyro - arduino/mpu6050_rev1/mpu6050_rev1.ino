@@ -1,8 +1,6 @@
 #include <Wire.h>       
 #include <I2Cdev.h>     
 #include <Adafruit_MPU6050.h>
-#include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 #define triggerPin 4
 #define echoPin 3
@@ -34,8 +32,7 @@ void setup()
   Serial.begin(9600);
   Wire.begin();
   mpu.begin();
-  lcd.init(); 
-  lcd.backlight();
+  //pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void gyroScope()
@@ -66,13 +63,6 @@ void gyroScope()
   Serial.print("Z = ");
   Serial.print(gyroZ);
   Serial.println(" rad/s");
-  Serial.println(" ");
-  lcd.setCursor(0, 1);
-  lcd.print(gyroX);
-  lcd.print(" ");
-  lcd.print(gyroY);
-  lcd.print(" ");
-  lcd.print(gyroZ);
 }
 
 void accelerometer()
@@ -92,15 +82,10 @@ void accelerometer()
   Serial.print("Z = ");
   Serial.print(accZ);
   Serial.println(" m/s2");
-  lcd.setCursor(0, 0);
-  lcd.print(accX);
-  lcd.print(" ");
-  lcd.print(accY);
-  lcd.print(" ");
-  lcd.print(accZ);
+
 }
 
-void readUltrasonicDistance() {
+long readUltrasonicDistance() {
   pinMode(triggerPin, OUTPUT);
   digitalWrite(triggerPin, LOW);
   delayMicroseconds(2);
@@ -108,18 +93,17 @@ void readUltrasonicDistance() {
   delayMicroseconds(10);
   digitalWrite(triggerPin, LOW);
   pinMode(echoPin, INPUT);
-  cm = 0.01723 * pulseIn(echoPin, HIGH);
-  Serial.println("HEIGHT");
-  Serial.print(cm);
-  Serial.println(" cm ");
-  
+  return pulseIn(echoPin, HIGH);
 }
 
 void loop()
 {
-  accelerometer();
   gyroScope();
-  //readUltrasonicDistance();
+  accelerometer();
+  cm = 0.01723 * readUltrasonicDistance();
+  Serial.println("HEIGHT");
+  Serial.print(cm);
+  Serial.println(" cm ");
+  Serial.println(" ");
   delay(1500);
-  lcd.clear();
 }
