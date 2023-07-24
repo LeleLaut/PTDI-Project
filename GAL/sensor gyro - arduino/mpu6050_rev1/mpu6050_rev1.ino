@@ -100,10 +100,10 @@ void loop()
 {
   gyroScope();
   accelerometer();
-  cm = 0.01723 * readUltrasonicDistance();
-  Serial.println("HEIGHT");
-  Serial.print(cm);
-  Serial.println(" cm ");
+  // cm = 0.01723 * readUltrasonicDistance();
+  // Serial.println("HEIGHT");
+  // Serial.print(cm);
+  // Serial.println(" cm ");
   Serial.println(" ");
-  delay(1500);
+  delay(2000);
 }
