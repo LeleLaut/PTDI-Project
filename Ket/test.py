@@ -54,9 +54,10 @@ def animate(i):
     ax1.set_xlabel("TimeStamp (s)")
 
     ax2.clear()
-    ax2.plot(xs, zs, label='Pitch')
-    ax2.plot(xs, ws, label='Roll')
-    ax2.plot(xs, vs, label='Yaw')
+    ax2.plot(xs, zs, label='Pitch' , marker = '.')
+    ax2.plot(xs, ws, label='Roll' , marker = '.')
+    ax2.plot(xs, vs, label='Yaw' , marker = '.')
+    ax2.set_ylim(-20, 20)
     ax2.set_ylabel("Nilai")
     ax2.set_xlabel("TimeStamp (s)")
     ax2.legend()

@@ -1,51 +1,39 @@
+import matplotlib.animation as mpla
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
 
-# Fungsi untuk menghitung ketinggian (z) berdasarkan x dan y
-def parabola_func(x, y):
-    a = 0.1  # Konstanta a
-    b = 0.1  # Konstanta b
-    c = 10   # Konstanta c
-    return a * x**2 + b * y**2 + c
+# Create data
+T = np.linspace(0, 2 * np.pi, 100)
+S = np.sin(T)
+P = np.cos(T)
 
-# Rentang waktu dan jumlah langkah
-time_steps = 50
-t = np.linspace(0, 100, time_steps)
+# Create the figure and subplots
+fig, axs = plt.subplots(3, 1, figsize=(8, 8))
+fig.suptitle('Grafik Trigonometri', fontsize=14, fontweight='bold')
 
-# Rentang koordinat x dan y
-x_range = np.linspace(0, 100, time_steps)
-y_range = np.linspace(-10, 10, time_steps)
+# Line plots
+line, = axs[0].plot(T, S, color='blue', label='sin(x)')
+line2, = axs[1].plot(T, P, color='red', label='cos(x)')
+line3, = axs[2].plot(S, T, color='green', label='sin(x)')
 
-# Membuat grid untuk x dan y
-X, Y = np.meshgrid(x_range, y_range)
+# Set titles and labels
+axs[0].set_title('Grafik Sinus')
+axs[1].set_title('Grafik Kosinus')
+axs[2].set_title('Grafik Sinus terhadap Nilai x')
 
-# Menghitung ketinggian (z) untuk setiap titik pada setiap waktu t
-Z = parabola_func(X, Y)
+for ax in axs:
+    ax.set_xlabel('Nilai x')
+    ax.set_ylabel('Nilai y')
+    ax.legend()
 
-# Menggeser ketinggian (Z) sehingga parabola dimulai dari (0, 0, 0)
-Z -= parabola_func(0, 0)
+# Animation function
+def animate(i):
+    line.set_ydata(np.sin(T + i / 50))
+    line2.set_ydata(np.cos(T + i / 50))
+    line3.set_ydata(np.sin(T + i / 50))
 
-# Membuat visualisasi 3D
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+# Create the animation
+anim = mpla.FuncAnimation(fig, animate, interval=50)
 
-# Tambahkan titik awal (0, 0, 0)
-#ax.scatter([0], [0], [0], color='red', label='Titik Awal (0, 0, 0)')
-
-# Plot garis gerak parabola
-for i in range(time_steps):
-    ax.plot([X[i, 0]], [Y[i, i]], [Z[i, i]], 'bo', markersize=4)  # Titik pergerakan
-    #ax.plot(X[:i, i], Y[:i, i], Z[:i, i], color='blue', alpha=0.5)  # Garis pergerakan
-
-# Tambahkan label sumbu
-ax.set_xlabel('X')
-ax.set_ylabel('Y')
-ax.set_zlabel('Z')
-
-# Tambahkan judul dan legenda
-plt.title('Gerak Parabola Sebagai Garis dalam Koordinat 3D')
-ax.legend()
-
-# Tampilkan plot
+plt.tight_layout()
 plt.show()
