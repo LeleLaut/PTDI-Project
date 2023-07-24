@@ -6,8 +6,8 @@
 
 // Update these with values suitable for your network.
 
-const char* ssid = "abcd";
-const char* password = "12345678";
+const char* ssid = "AlifiaMR";
+const char* password = "YUI12345";
 const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org
 
 WiFiClient espClient;
@@ -107,13 +107,16 @@ void loop() {
   {                                                                   
     Serial.print("P : ");
     Serial.print(mpu.getAngleX());
-    value=mpu.getAngleX();
-    snprintf (msg, MSG_BUFFER_SIZE, "X :%ld", mpu.getAngleX());
-    client.publish("Arduino/Gyro", msg);
+    snprintf (msg, MSG_BUFFER_SIZE, "P :%f", mpu.getAngleX());
+    client.publish("Arduino/6 Degree Freedom X |", msg);
     Serial.print(" | R : ");
     Serial.print(mpu.getAngleY());
+    snprintf (msg, MSG_BUFFER_SIZE, "R :%f", mpu.getAngleY());
+    client.publish("Arduino/6 Degree Freedom Y |", msg);
     Serial.print(" | Y : ");
-    Serial.println(mpu.getAngleZ());                
+    Serial.println(mpu.getAngleZ());
+    snprintf (msg, MSG_BUFFER_SIZE, "Y :%f", mpu.getAngleZ());
+    client.publish("Arduino/6 Degree Freedom Z |", msg);                
     timer = millis();  
   }
 }
