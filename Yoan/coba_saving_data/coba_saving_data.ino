@@ -172,17 +172,17 @@ void accelerometer() {
 void degree() {
   mpu.update();
   Serial.print("P : ");
-  angleX = float(mpu.getAngleX();)
+  angleX = float(mpu.getAngleX());
   Serial.print(angleX);
   snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleX);
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
-  angleY = float(mpu.getAngleY();)
+  angleY = float(mpu.getAngleY());
   Serial.print(angleY);
   snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  angleZ = float(mpu.getAngleZ;)
+  angleZ = float(mpu.getAngleZ());
   Serial.println(angleZ);
   snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
