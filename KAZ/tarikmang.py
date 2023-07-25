@@ -12,7 +12,7 @@ def on_message(client, userdata, message):
     subscribed_data.append(payload)
     # You can process or filter the data here before saving it to the CSV file
     # For simplicity, we'll save the topic and payload as-is
-    if len(subscribed_data) == 3:
+    if len(subscribed_data) == 9:
         with open('mqtt_logs.csv', 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(subscribed_data)
@@ -27,7 +27,16 @@ client.on_message = on_message
 client.connect('0.tcp.ap.ngrok.io', 10968, 60)
 
 # Subscribe to the desired MQTT topic
-client.subscribe([('Arduino/6 Degree Freedom X | P : ',0),('Arduino/6 Degree Freedom Y | R : ',1),('Arduino/6 Degree Freedom Z | Y : ',2)])
+client.subscribe([('Arduino/GYRO X |',2),
+                  ('Arduino/GYRO Y |',2),
+                  ('Arduino/GYRO Z |',2),
+                  ('Arduino/ACC X |',2),
+                  ('Arduino/ACC Y |',2),
+                  ('Arduino/ACC Z |',2),
+                  ('Arduino/6 Degree Freedom X |',2),
+                  ('Arduino/6 Degree Freedom Y |',2),
+                  ('Arduino/6 Degree Freedom Z |',2),
+                  ])
 
 # Start the MQTT network loop to process incoming messages
 client.loop_start()
