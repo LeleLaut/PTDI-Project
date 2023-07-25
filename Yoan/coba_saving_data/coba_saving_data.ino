@@ -4,7 +4,7 @@
 #include <MPU6050_light.h>
 #include <Adafruit_MPU6050.h>
 #include <SPI.h>
-// #include <SD.h>
+#include <SD.h>
 const int chipSelect = D8;
 
 Adafruit_MPU6050 adampu;
@@ -172,17 +172,17 @@ void accelerometer() {
 void degree() {
   mpu.update();
   Serial.print("P : ");
-  angleX = mpu.getAngleX();
+  angleX = float(mpu.getAngleX());
   Serial.print(angleX);
   snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleX);
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
-  angleY = mpu.getAngleY();
+  angleY = float(mpu.getAngleY());
   Serial.print(angleY);
   snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  angleZ = mpu.getAngleZ;
+  angleZ = float(mpu.getAngleZ());
   Serial.println(angleZ);
   snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
@@ -200,7 +200,7 @@ void saving_data() {
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 19636);
+  client.setServer(mqtt_server, 10968);
     if (!SD.begin(chipSelect)) {
     Serial.println("Kartu microSD tidak terdeteksi!");
     return;
