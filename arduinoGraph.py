@@ -36,16 +36,16 @@ def animate(i):
             Y.append(float(y))
 
     # Limit the data to show only the last 5 points
-    P = P[-5:]
-    R = R[-5:]
-    Y = Y[-5:]
+    P = P[-10:]
+    R = R[-10:]
+    Y = Y[-10:]
 
     ax2.clear()
     xs = list(range(len(P)))  # Create a list of indices as xs
     ax2.plot(xs, P, label='Pitch', marker='.')
     ax2.plot(xs, R, label='Roll', marker='.')
     ax2.plot(xs, Y, label='Yaw', marker='.')
-    ax2.set_ylim(-20, 20)
+    ax2.set_ylim(-180, 180)
     ax2.set_ylabel("Nilai")
     ax2.set_xlabel("TimeStamp (s)")
     ax2.legend()
