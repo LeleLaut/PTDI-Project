@@ -127,17 +127,17 @@ void gyroScope() {
   Serial.print("X = ");
   Serial.print(gyroX);
   Serial.print(" rad/s  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "X :%.2f rad/s", gyroX);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", gyroX);
   client.publish("Arduino/GYRO X |", msg);
   Serial.print("Y = ");
   Serial.print(gyroY);
   Serial.print(" rad/s  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "Y :%.2f rad/s", gyroY);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", gyroY);
   client.publish("Arduino/GYRO Y |", msg);
   Serial.print("Z = ");
   Serial.print(gyroZ);
   Serial.println(" rad/s");
-  snprintf(msg, MSG_BUFFER_SIZE, "Z :%.2f rad/s", gyroZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", gyroZ);
   client.publish("Arduino/GYRO Z |", msg);
 }
 
@@ -151,17 +151,17 @@ void accelerometer() {
   Serial.print("X = ");
   Serial.print(accX);
   Serial.print(" m/s2  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "X :%.2f m/s2", accX);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", accX);
   client.publish("Arduino/ACC X |", msg);
   Serial.print("Y = ");
   Serial.print(accY);
   Serial.print(" m/s2  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "Y :%.2f m/s2", accY);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", accY);
   client.publish("Arduino/ACC Y |", msg);
   Serial.print("Z = ");
   Serial.print(accZ);
   Serial.println(" m/s2");
-  snprintf(msg, MSG_BUFFER_SIZE, "Z :%.2f m/s2", accZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", accZ);
   client.publish("Arduino/ACC Z |", msg);
 }
 
@@ -169,15 +169,15 @@ void degree() {
   mpu.update();
   Serial.print("P : ");
   Serial.print(mpu.getAngleX());
-  snprintf(msg, MSG_BUFFER_SIZE, "P :%.2f", mpu.getAngleX());
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", mpu.getAngleX());
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
   Serial.print(mpu.getAngleY());
-  snprintf(msg, MSG_BUFFER_SIZE, "R :%.2f", mpu.getAngleY());
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", mpu.getAngleY());
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
   Serial.println(mpu.getAngleZ());
-  snprintf(msg, MSG_BUFFER_SIZE, "Y :%.2f", mpu.getAngleZ());
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", mpu.getAngleZ());
   client.publish("Arduino/6 Degree Freedom Z |", msg);
 }
 
@@ -200,5 +200,5 @@ void loop() {
   gyroScope();
   accelerometer();
   degree();
-  delay(500);
+  delay(1000);
 }
