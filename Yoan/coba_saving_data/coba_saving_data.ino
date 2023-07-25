@@ -190,7 +190,7 @@ void degree() {
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.printf("%.2f,%.2f,%.2f", angleX, angleY, angleZ);
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angleX, angleY, angleZ);
     dataFile.close();
     Serial.println("Berhasil menulis data ke berkas data.txt.");
   } else {
