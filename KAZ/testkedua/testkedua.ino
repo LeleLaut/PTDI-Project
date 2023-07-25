@@ -184,7 +184,7 @@ void degree() {
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 19636);
+  client.setServer(mqtt_server, 10968);
   Wire.begin();
   mpu.begin();
   Serial.println(F("Calculating gyro offset, do not move MPU6050"));
