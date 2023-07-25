@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include <SD.h>
-
+String logdata=""
 const int chipSelect = 10; // Sesuaikan dengan pin Chip Select yang Anda gunakan
 
 void setup() {
@@ -13,7 +13,11 @@ void setup() {
   }
   Serial.println("Kartu microSD terdeteksi!");
 
-  // Buat dan tulis data ke berkas data.txt
+ 
+}
+
+void loop() {
+  logdata=""
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
     dataFile.println("Ini adalah contoh data yang ditulis ke berkas.");
@@ -22,8 +26,4 @@ void setup() {
   } else {
     Serial.println("Gagal membuat atau membuka berkas data.txt.");
   }
-}
-
-void loop() {
-  // Tidak ada yang perlu dilakukan pada loop
 }
