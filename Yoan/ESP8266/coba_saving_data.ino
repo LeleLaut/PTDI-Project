@@ -4,9 +4,8 @@
 #include <MPU6050_light.h>
 #include <Adafruit_MPU6050.h>
 #include <SPI.h>
-#include <SD.h>
-
-const int chipSelect = 10;
+// #include <SD.h>
+const int chipSelect = D8;
 
 Adafruit_MPU6050 adampu;
 int16_t ax, ay, az;
@@ -189,10 +188,9 @@ void degree() {
   client.publish("Arduino/6 Degree Freedom Z |", msg);
 }
 void saving_data() {
-  logdata=""
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.println("Ini adalah contoh data yang ditulis ke berkas.");
+    dataFile.printf("%.2f,%.2f,%.2f", angleX, angleY, angleZ);
     dataFile.close();
     Serial.println("Berhasil menulis data ke berkas data.txt.");
   } else {
@@ -223,5 +221,6 @@ void loop() {
   gyroScope();
   accelerometer();
   degree();
+  saving_data();
   delay(1000);
 }
