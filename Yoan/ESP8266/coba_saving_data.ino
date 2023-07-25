@@ -5,7 +5,7 @@
 #include <Adafruit_MPU6050.h>
 #include <SPI.h>
 #include <SD.h>
-String logdata=""
+
 const int chipSelect = 10;
 
 Adafruit_MPU6050 adampu;
@@ -20,6 +20,7 @@ float gyroZerror = 0.01;
 
 float gyroX, gyroY, gyroZ;
 float accX, accY, accZ;
+float angleX, angleY, angleZ;
 
 struct MyData {
   byte X;
@@ -172,16 +173,19 @@ void accelerometer() {
 void degree() {
   mpu.update();
   Serial.print("P : ");
-  Serial.print(mpu.getAngleX());
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", mpu.getAngleX());
+  angleX = mpu.getAngleX();
+  Serial.print(angleX);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleX);
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
-  Serial.print(mpu.getAngleY());
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", mpu.getAngleY());
+  angleY = mpu.getAngleY();
+  Serial.print(angleY);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  Serial.println(mpu.getAngleZ());
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", mpu.getAngleZ());
+  angleZ = mpu.getAngleZ;
+  Serial.println(angleZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
 }
 void saving_data() {
