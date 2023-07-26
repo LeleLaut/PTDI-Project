@@ -11,7 +11,7 @@ fig2.set_size_inches(6, 4)
 ax2 = fig2.add_subplot(1, 1, 1)
 
 def animate(i):
-    graph_data = open('mqtt_logs.csv', 'r').readlines()
+    graph_data = open('KAZ/mqtt_logs.csv', 'r').readlines()
     lines = graph_data[1:]
     GX = []
     GY = []
