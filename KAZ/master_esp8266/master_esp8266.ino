@@ -14,9 +14,9 @@ int16_t gx, gy, gz;
 sensors_event_t a, g, temp;
 
 //Gyroscope sensor deviation
-float gyroXerror = 0.007;
-float gyroYerror = 0.003;
-float gyroZerror = 0.001;
+float gyroXerror = 0.07;
+float gyroYerror = 0.03;
+float gyroZerror = 0.01;
 
 float gyroX, gyroY, gyroZ;
 float accX, accY, accZ;
@@ -211,7 +211,7 @@ void setup() {
   Serial.println("Kartu microSD terdeteksi!");
   SD.remove("data.txt");
   Wire.begin();
-  mpu.begin();
+  adampu.begin();
   Serial.println(F("Calculating gyro offset, do not move MPU6050"));
   mpu.calcGyroOffsets();
 }
