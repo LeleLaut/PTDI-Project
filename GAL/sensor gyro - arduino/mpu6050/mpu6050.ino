@@ -25,7 +25,7 @@ void setup()
 void loop()
 {
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-  data.X = map(ax, -17000, 17000, -180, 180); // X axis data
+  data.X = map(ax, -17000, 17000, -255, 255); // X axis data
   data.Y = map(ay, -17000, 17000, -180, 180); 
   data.Z = map(az, -17000, 17000, -180, 180);  // Y axis data
   delay(1000);

@@ -178,7 +178,7 @@ void degree() {
   snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  angleZ = float(mpu.getAngleZ());
+  angleZ = float(mpu.getAngleZ()) * -1;
   Serial.println(angleZ);
   snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
