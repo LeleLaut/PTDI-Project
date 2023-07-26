@@ -6,12 +6,13 @@ if os.path.exists('./masterTjuy/mqtt_logs_ardu.csv'):
 if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
     os.remove('./masterTjuy/mqtt_logs_andro.csv')
 
-
 mqtt_port=14731
+ininambah=0
 
 subscribed_data = []
 # Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
+    global ininambah
     topic = message.topic
     payload = message.payload.decode('utf-8')
     subscribed_data.append(payload)
@@ -19,24 +20,28 @@ def on_message(client, userdata, message):
     # For simplicity, we'll save the topic and payload as-is
     if len(subscribed_data) == 10:
         subscribed_data.sort()
-        print("\n AWIKWOK \n")
-        print(subscribed_data)
         payload2=subscribed_data[9].strip('[]')
         new_payload=payload2.replace('"','')
         list_akhir = [item for item in new_payload.split(',')]
-        del subscribed_data[9]
-        print("\n DELWED \n")
-        print(subscribed_data)
-        with open('./masterTjuy/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(subscribed_data)
-        with open('./masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(list_akhir)
+        del subscribed_data[9] 
+        check9=subscribed_data[8].split()
+        if (check9[0]!='9'):
+            subscribed_data.clear()
+            list_akhir.clear()
+        print(len(subscribed_data))
+        if (len(subscribed_data)==9) and (len(list_akhir)==11):
+            subscribed_data.append(ininambah)
+            with open('./masterTjuy/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
+                csv_writer = csv.writer(csvfile)
+                csv_writer.writerow(subscribed_data)
+            list_akhir.append(ininambah)
+            with open('./masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
+                csv_writer = csv.writer(csvfile)
+                csv_writer.writerow(list_akhir)
+            ininambah+=1
         
         subscribed_data.clear()
         list_akhir.clear()
-        print("\n NYEDOT \n")
 
 # Create an MQTT client instance
 client = mqtt.Client()
