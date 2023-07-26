@@ -1,8 +1,10 @@
 import csv
 import paho.mqtt.client as mqtt
 import os
-if os.path.exists('mqtt_logs.csv'):
-    os.remove('mqtt_logs.csv')
+if os.path.exists('mqtt_logs_ardu.csv'):
+    os.remove('mqtt_logs_ardu.csv')
+
+mqtt_port=14731
 
 subscribed_data = []
 # Callback when the client receives a message from the broker
@@ -10,13 +12,17 @@ def on_message(client, userdata, message):
     topic = message.topic
     payload = message.payload.decode('utf-8')
     subscribed_data.append(payload)
+    
+
     # You can process or filter the data here before saving it to the CSV file
     # For simplicity, we'll save the topic and payload as-is
     if len(subscribed_data) == 9:
-        with open('mqtt_logs.csv', 'a', newline='') as csvfile:
+        with open('mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(subscribed_data)
+        print(subscribed_data)
         subscribed_data.clear()
+        
 # Create an MQTT client instance
 client = mqtt.Client()
 
@@ -24,7 +30,7 @@ client = mqtt.Client()
 client.on_message = on_message
 
 # Connect to the MQTT broker
-client.connect('0.tcp.ap.ngrok.io', 10968, 60)
+client.connect('0.tcp.ap.ngrok.io', mqtt_port, 60)
 
 # Subscribe to the desired MQTT topic
 client.subscribe([('Arduino/GYRO X |',2),
