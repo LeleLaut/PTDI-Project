@@ -20,11 +20,13 @@ def on_message(client, userdata, message):
     # For simplicity, we'll save the topic and payload as-is
     if len(subscribed_data) == 10:
         subscribed_data.sort()
+
         payload2=subscribed_data[9].strip('[]')
         new_payload=payload2.replace('"','')
         list_akhir = [item for item in new_payload.split(',')]
         del subscribed_data[9] 
         check9=subscribed_data[8].split()
+
         if (check9[0]!='9'):
             subscribed_data.clear()
             list_akhir.clear()
