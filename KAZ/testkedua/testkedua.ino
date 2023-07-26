@@ -3,6 +3,10 @@
 #include <Wire.h>
 #include <MPU6050_light.h>
 #include <Adafruit_MPU6050.h>
+#include <SPI.h>
+#include <SD.h>
+
+const int chipSelect = D8;
 
 Adafruit_MPU6050 adampu;
 int16_t ax, ay, az;
