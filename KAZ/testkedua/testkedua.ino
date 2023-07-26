@@ -168,23 +168,43 @@ void accelerometer() {
 void degree() {
   mpu.update();
   Serial.print("P : ");
-  Serial.print(mpu.getAngleX());
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", mpu.getAngleX());
+  angleX = float(mpu.getAngleX());
+  Serial.print(angleX);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleX);
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
-  Serial.print(mpu.getAngleY());
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", mpu.getAngleY());
+  angleY = float(mpu.getAngleY());
+  Serial.print(angleY);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  Serial.println(mpu.getAngleZ());
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", mpu.getAngleZ());
+  angleZ = float(mpu.getAngleZ());
+  Serial.println(angleZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
+}
+
+void saving_data() {
+  File dataFile = SD.open("data.txt", FILE_WRITE);
+  if (dataFile) {
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angleX, angleY, angleZ);
+    dataFile.close();
+    Serial.println("Berhasil menulis data ke berkas data.txt.");
+  } else {
+    Serial.println("Gagal membuat atau membuka berkas data.txt.");
+  }
 }
 
 void setup() {
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 14731);
+  if (!SD.begin(chipSelect)) {
+    Serial.println("Kartu microSD tidak terdeteksi!");
+    return;
+  }
+  Serial.println("Kartu microSD terdeteksi!");
+  SD.remove("data.txt");
   Wire.begin();
   mpu.begin();
   Serial.println(F("Calculating gyro offset, do not move MPU6050"));
@@ -200,5 +220,6 @@ void loop() {
   gyroScope();
   accelerometer();
   degree();
+  saving_data();
   delay(1000);
 }
