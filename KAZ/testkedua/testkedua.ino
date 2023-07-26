@@ -132,17 +132,17 @@ void gyroScope() {
   Serial.print("X = ");
   Serial.print(gyroX);
   Serial.print(" rad/s  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", gyroX);
+  snprintf(msg, MSG_BUFFER_SIZE, "1 %.2f", gyroX);
   client.publish("Arduino/GYRO X |", msg);
   Serial.print("Y = ");
   Serial.print(gyroY);
   Serial.print(" rad/s  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", gyroY);
+  snprintf(msg, MSG_BUFFER_SIZE, "2 %.2f", gyroY);
   client.publish("Arduino/GYRO Y |", msg);
   Serial.print("Z = ");
   Serial.print(gyroZ);
   Serial.println(" rad/s");
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", gyroZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "3 %.2f", gyroZ);
   client.publish("Arduino/GYRO Z |", msg);
 }
 
@@ -156,17 +156,17 @@ void accelerometer() {
   Serial.print("X = ");
   Serial.print(accX);
   Serial.print(" m/s2  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", accX);
+  snprintf(msg, MSG_BUFFER_SIZE, "4 %.2f", accX);
   client.publish("Arduino/ACC X |", msg);
   Serial.print("Y = ");
   Serial.print(accY);
   Serial.print(" m/s2  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", accY);
+  snprintf(msg, MSG_BUFFER_SIZE, "5 %.2f", accY);
   client.publish("Arduino/ACC Y |", msg);
   Serial.print("Z = ");
   Serial.print(accZ);
   Serial.println(" m/s2");
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", accZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "6 %.2f", accZ);
   client.publish("Arduino/ACC Z |", msg);
 }
 
@@ -175,17 +175,17 @@ void degree() {
   Serial.print("P : ");
   angleX = float(mpu.getAngleX());
   Serial.print(angleX);
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleX);
+  snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", angleX);
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
   angleY = float(mpu.getAngleY());
   Serial.print(angleY);
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleY);
+  snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", angleY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
   angleZ = float(mpu.getAngleZ()) * -1;
   Serial.println(angleZ);
-  snprintf(msg, MSG_BUFFER_SIZE, "%.2f", angleZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", angleZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
 }
 
