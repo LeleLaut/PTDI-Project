@@ -17,12 +17,12 @@ void setup() {
 }
 
 void loop() {
-  mpu.update();                                                                   
+  mpu.update();   
   Serial.print("P : ");
   Serial.print(mpu.getAngleX());
   Serial.print(" | R : ");
   Serial.print(mpu.getAngleY());
   Serial.print(" | Y : ");
   Serial.println(mpu.getAngleZ() * -1);                
-  delay(1000);
+  delay(100);
 }
