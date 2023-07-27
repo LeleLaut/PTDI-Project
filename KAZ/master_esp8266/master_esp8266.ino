@@ -185,7 +185,7 @@ void degree() {
   // Apply exponential moving average filter
   smoothedAngleX = (alpha * rawAngleX) + ((1 - alpha) * smoothedAngleX);
   smoothedAngleY = (alpha * rawAngleY) + ((1 - alpha) * smoothedAngleY);
-  smoothedAngleZ = ((alpha * rawAngleZ) + ((1 - alpha) * smoothedAngleZ)) * -1;
+  smoothedAngleZ = (alpha * rawAngleZ) + ((1 - alpha) * smoothedAngleZ);
 
   Serial.print("P : ");
   Serial.print(smoothedAngleX);
