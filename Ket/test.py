@@ -5,14 +5,12 @@ from matplotlib import style
 
 plt.style.use('ggplot')
 
-fig = plt.figure()
-fig.suptitle('Grafik Ketinggian', fontsize=8, fontweight='bold')
-fig.set_size_inches(6, 4)
-fig2 = plt.figure()
-fig2.suptitle('Grafik Pitch, Roll, dan Yaw', fontsize=8, fontweight='bold')
-fig2.set_size_inches(6, 4)
-ax1 = fig.add_subplot(1, 1, 1)
-ax2 = fig2.add_subplot(1, 1, 1)
+# Create a single figure
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(7, 6))
+
+# Set titles for each subplot
+ax1.set_title('Grafik Ketinggian', fontsize=8, fontweight='bold')
+ax2.set_title('Grafik Pitch, Roll, dan Yaw', fontsize=8, fontweight='bold')
 
 def generate_random_data(timestamp):
     with open('data.txt', 'a') as file:
@@ -71,3 +69,6 @@ while True:
     generate_random_data(timestamp)
     timestamp += 1
     plt.pause(1)
+
+# Show the combined figure
+plt.show()
