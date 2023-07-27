@@ -174,17 +174,17 @@ void degree() {
   mpu.update();
 
   Serial.print("P : ");
-  degX = mpu.getAccAngleX();
+  degX = mpu.getAngleX();
   Serial.print(degX);
   snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", degX);
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
-  degY = mpu.getAccAngleY();
+  degY = mpu.getAngleY();
   Serial.print(degY);
   snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", degY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  degZ = mpu.getAccAngleZ();
+  degZ = mpu.getAngleZ();
   Serial.println(degZ);
   snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", degZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
