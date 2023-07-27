@@ -204,7 +204,7 @@ void degree() {
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angleX, angleY, angleZ);
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, smoothedAngleX, smoothedAngleY, smoothedAngleZ);
     dataFile.close();
     Serial.println("Berhasil menulis data ke berkas data.txt.");
   } else {
@@ -215,7 +215,7 @@ void saving_data() {
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 14731);
+  client.setServer(mqtt_server, 13533);
   if (!SD.begin(chipSelect)) {
     Serial.println("Kartu microSD tidak terdeteksi!");
     return;
