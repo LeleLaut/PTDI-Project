@@ -28,7 +28,7 @@ void loop() {
   // Apply exponential moving average filter
   smoothedAngleX = (alpha * rawAngleX) + ((1 - alpha) * smoothedAngleX);
   smoothedAngleY = (alpha * rawAngleY) + ((1 - alpha) * smoothedAngleY);
-  smoothedAngleZ = (alpha * rawAngleZ) + ((1 - alpha) * smoothedAngleZ);
+  smoothedAngleZ = ((alpha * rawAngleZ) + ((1 - alpha) * smoothedAngleZ)) * -1;
 
   // Get rotation angle on Z axis
 
@@ -38,7 +38,7 @@ void loop() {
   Serial.print(" | R : ");
   Serial.print(smoothedAngleY);
   Serial.print(" | Y : ");
-  Serial.println(smoothedAngleZ * -1);
+  Serial.println(smoothedAngleZ);
 
   delay(100);
 }

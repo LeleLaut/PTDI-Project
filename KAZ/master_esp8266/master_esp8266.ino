@@ -223,7 +223,6 @@ void setup() {
   Serial.println("Kartu microSD terdeteksi!");
   SD.remove("data.txt");
   Wire.begin();
-  mpu.begin();
   adampu.begin();
   Serial.println(F("Calculating gyro offset, do not move MPU6050"));
   mpu.calcGyroOffsets();
