@@ -37,18 +37,15 @@ def on_message(client, userdata, message):
             print(f"Error converting data to float: {e}")
             return
         subscribed_data.extend(cleaned_payload)
-        print(subscribed_data)
         if (len(subscribed_data)==9) and (len(list_akhir)==11):
             subscribed_data.append(ininambah)
             with open('./masterTjuy/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(subscribed_data)
-            print(subscribed_data)
             list_akhir.append(ininambah)
             with open('./masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(list_akhir)
-            # print(list_akhir)
             ininambah+=1
         
         subscribed_data.clear()
