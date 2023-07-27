@@ -6,7 +6,7 @@ if os.path.exists('./masterTjuy/mqtt_logs_ardu.csv'):
 if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
     os.remove('./masterTjuy/mqtt_logs_andro.csv')
 
-mqtt_port=14731
+mqtt_port=13533
 ininambah=0
 
 subscribed_data = []
@@ -20,26 +20,35 @@ def on_message(client, userdata, message):
     # For simplicity, we'll save the topic and payload as-is
     if len(subscribed_data) == 10:
         subscribed_data.sort()
-
         payload2=subscribed_data[9].strip('[]')
         new_payload=payload2.replace('"','')
         list_akhir = [item for item in new_payload.split(',')]
         del subscribed_data[9] 
         check9=subscribed_data[8].split()
-
         if (check9[0]!='9'):
             subscribed_data.clear()
             list_akhir.clear()
-        print(len(subscribed_data))
+
+        cleaned_payload = [value[2:] for value in subscribed_data]
+        try:
+            cleaned_payload = [value for value in cleaned_payload]
+            subscribed_data.clear()
+        except ValueError as e:
+            print(f"Error converting data to float: {e}")
+            return
+        subscribed_data.extend(cleaned_payload)
+        print(subscribed_data)
         if (len(subscribed_data)==9) and (len(list_akhir)==11):
             subscribed_data.append(ininambah)
             with open('./masterTjuy/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(subscribed_data)
+            print(subscribed_data)
             list_akhir.append(ininambah)
             with open('./masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(list_akhir)
+            # print(list_akhir)
             ininambah+=1
         
         subscribed_data.clear()
