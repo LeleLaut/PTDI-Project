@@ -20,7 +20,11 @@ float gyroZerror = 0.01;
 
 float gyroX, gyroY, gyroZ;
 float accX, accY, accZ;
-float angleX, angleY, angleZ;
+
+const float alpha = 0.4;
+float smoothedAngleX = 0.0;
+float smoothedAngleY = 0.0;
+float smoothedAngleZ = 0.0;
 
 struct MyData {
   byte X;
@@ -172,20 +176,28 @@ void accelerometer() {
 
 void degree() {
   mpu.update();
+
+  // Read raw tilt angles
+  float rawAngleX = mpu.getAngleX();
+  float rawAngleY = mpu.getAngleY();
+  float rawAngleZ = mpu.getAngleZ();
+
+  // Apply exponential moving average filter
+  smoothedAngleX = (alpha * rawAngleX) + ((1 - alpha) * smoothedAngleX);
+  smoothedAngleY = (alpha * rawAngleY) + ((1 - alpha) * smoothedAngleY);
+  smoothedAngleZ = ((alpha * rawAngleZ) + ((1 - alpha) * smoothedAngleZ)) * -1;
+
   Serial.print("P : ");
-  angleX = float(mpu.getAngleX());
-  Serial.print(angleX);
-  snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", angleX);
+  Serial.print(smoothedAngleX);
+  snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", smoothedAngleX);
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
-  angleY = float(mpu.getAngleY());
-  Serial.print(angleY);
-  snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", angleY);
+  Serial.print(smoothedAngleY);
+  snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", smoothedAngleY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  angleZ = float(mpu.getAngleZ()) * -1;
-  Serial.println(angleZ);
-  snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", angleZ);
+  Serial.println(smoothedAngleZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", smoothedAngleZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
 }
 
