@@ -20,11 +20,7 @@ float gyroZerror = 0.01;
 
 float gyroX, gyroY, gyroZ;
 float accX, accY, accZ;
-
-const float alpha = 0.4;
-float smoothedAngleX = 0.0;
-float smoothedAngleY = 0.0;
-float smoothedAngleZ = 0.0;
+float degX, degY, degZ;
 
 struct MyData {
   byte X;
@@ -177,34 +173,27 @@ void accelerometer() {
 void degree() {
   mpu.update();
 
-  // Read raw tilt angles
-  float rawAngleX = mpu.getAngleX();
-  float rawAngleY = mpu.getAngleY();
-  float rawAngleZ = mpu.getAngleZ();
-
-  // Apply exponential moving average filter
-  smoothedAngleX = (alpha * rawAngleX) + ((1 - alpha) * smoothedAngleX);
-  smoothedAngleY = (alpha * rawAngleY) + ((1 - alpha) * smoothedAngleY);
-  smoothedAngleZ = (alpha * rawAngleZ) + ((1 - alpha) * smoothedAngleZ);
-
   Serial.print("P : ");
-  Serial.print(smoothedAngleX);
-  snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", smoothedAngleX);
+  degX = mpu.getAccAngleX();
+  Serial.print(degX);
+  snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", degX);
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
-  Serial.print(smoothedAngleY);
-  snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", smoothedAngleY);
+  degY = mpu.getAccAngleY();
+  Serial.print(degY);
+  snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", degY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  Serial.println(smoothedAngleZ);
-  snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", smoothedAngleZ);
+  degZ = mpu.getAccAngleZ();
+  Serial.println(degZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", degZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
 }
 
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, smoothedAngleX, smoothedAngleY, smoothedAngleZ);
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, degX, degY, degZ);
     dataFile.close();
     Serial.println("Berhasil menulis data ke berkas data.txt.");
   } else {
