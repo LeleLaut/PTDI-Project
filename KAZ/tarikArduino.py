@@ -1,27 +1,40 @@
 import csv
 import paho.mqtt.client as mqtt
 import os
-if os.path.exists('mqtt_logs_ardu.csv'):
-    os.remove('mqtt_logs_ardu.csv')
+if os.path.exists('./KAZ/mqtt_logs_ardu.csv'):
+    os.remove('./KAZ/mqtt_logs_ardu.csv')
 
-mqtt_port=14731
+mqtt_port=18080
+ininambah=0
 
 subscribed_data = []
 # Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
+    global ininambah
     topic = message.topic
     payload = message.payload.decode('utf-8')
     subscribed_data.append(payload)
     
-
     # You can process or filter the data here before saving it to the CSV file
+    
     # For simplicity, we'll save the topic and payload as-is
-    if len(subscribed_data) == 9:
-        with open('mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(subscribed_data)
-        print(subscribed_data)
-        subscribed_data.clear()
+    if len(subscribed_data)==9:
+        subscribed_data.sort()
+        cleaned_payload = [value[2:] for value in subscribed_data]
+        try:
+            cleaned_payload = [value for value in cleaned_payload]
+            subscribed_data.clear()
+        except ValueError as e:
+            print(f"Error converting data to float: {e}")
+            return
+        subscribed_data.extend(cleaned_payload)
+        if len(subscribed_data) == 9:
+            subscribed_data.append(ininambah)
+            with open('./KAZ/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
+                csv_writer = csv.writer(csvfile)
+                csv_writer.writerow(subscribed_data)
+            ininambah+=1
+            subscribed_data.clear()
         
 # Create an MQTT client instance
 client = mqtt.Client()
