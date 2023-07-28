@@ -6,10 +6,13 @@ from matplotlib import style
 plt.style.use('ggplot')
 
 # Create a figure with 5 subplots
-fig, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
-fig2, ((ax4, ax5, ax6)) = plt.subplots(3,1, figsize=(8, 6))
+fig, ((ax1, ax7, ax4),(ax2, ax8, ax5),(ax3, ax9, ax6)) = plt.subplots(3,3, figsize=(8, 6))
+# fig1, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
+# fig2, ((ax4, ax5, ax6)) = plt.subplots(3,1, figsize=(8, 6))
+# fig3, ((ax7, ax8, ax9)) = plt.subplots(3,1, figsize=(8, 6))
 fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
-fig2.suptitle('Grafik Data Android', fontsize=12, fontweight='bold')
+# fig2.suptitle('Grafik Data Android', fontsize=12, fontweight='bold')
+# fig3.suptitle('Grafik Perbandingan', fontsize=12, fontweight='bold')
 
 def animate(i):
     graph_data = open('mqtt_logs_ardu.csv', 'r').readlines()
@@ -135,7 +138,7 @@ def animate(i):
     ax5.plot(Time_andro, DataX1, label='DataX1', marker='.')
     ax5.plot(Time_andro, DataY1, label='DataY1', marker='.')
     ax5.plot(Time_andro, DataZ1, label='DataZ1', marker='.')
-    ax5.set_ylim(-360, 360)
+    ax5.set_ylim(-90,90)
     ax5.set_ylabel("Nilai")
     ax5.set_xlabel("TimeStamp (s)")
     ax5.legend()
@@ -148,6 +151,30 @@ def animate(i):
     ax6.set_ylabel("Nilai")
     ax6.set_xlabel("TimeStamp (s)")
     ax6.legend()
+
+    ax7.clear()
+    ax7.plot(Time_andro, P_andro, label='Pitch (Android)', marker='.')
+    ax7.plot(Time, P, label='Pitch (Arduino)', marker='.')
+    ax7.set_ylim(-180, 180)
+    ax7.set_ylabel("Nilai")
+    ax7.set_xlabel("TimeStamp (s)")
+    ax7.legend()
+
+    ax8.clear()
+    ax8.plot(Time_andro, R_andro, label='Roll (Android)', marker='.')
+    ax8.plot(Time, R, label='Roll (Arduino)', marker='.')
+    ax8.set_ylim(-180, 180)
+    ax8.set_ylabel("Nilai")
+    ax8.set_xlabel("TimeStamp (s)")
+    ax8.legend()
+
+    ax9.clear()
+    ax9.plot(Time_andro, Y_andro, label='Yaw (Android)', marker='.')
+    ax9.plot(Time, Y, label='Yaw (Arduino)', marker='.')
+    ax9.set_ylim(-180, 180)
+    ax9.set_ylabel("Nilai")
+    ax9.set_xlabel("TimeStamp (s)")
+    ax9.legend()
 
 open('mqtt_logs.csv', 'w').close()
 open('mqtt_logs_andro.csv', 'w').close()  # Create and clear the mqtt_logs_andro.csv file
