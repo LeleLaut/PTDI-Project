@@ -2,14 +2,16 @@ import csv
 import paho.mqtt.client as mqtt
 import os
 import ssl
-if os.path.exists('mqtt_logs_andro.csv'):
-    os.remove('mqtt_logs_andro.csv')
+if os.path.exists('./KAZ/mqtt_logs_andro.csv'):
+    os.remove('./KAZ/mqtt_logs_andro.csv')
 
 mqtt_port=14731
+ininambah=0
 
 list_akhir=[]
 # Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
+    global ininambah
     topic = message.topic
     payload = message.payload.decode('utf-8')
     payload2=payload.strip('[]')
@@ -20,10 +22,12 @@ def on_message(client, userdata, message):
     # You can process or filter the data here before saving it to the CSV file
     # For simplicity, we'll save the topic and payload as-is
     if len(list_akhir) == 12:
-        with open('mqtt_logs_andro.csv', 'a', newline='') as csvfile:
+        list_akhir.append(ininambah)
+        with open('./KAZ/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(list_akhir)
         list_akhir.clear()
+        ininambah+=1
 # Create an MQTT client instance
 client = mqtt.Client()
 
