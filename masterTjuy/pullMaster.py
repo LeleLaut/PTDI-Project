@@ -6,7 +6,7 @@ if os.path.exists('./masterTjuy/mqtt_logs_ardu.csv'):
 if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
     os.remove('./masterTjuy/mqtt_logs_andro.csv')
 
-mqtt_port=13533
+mqtt_port=18080
 ininambah=0
 
 subscribed_data = []
