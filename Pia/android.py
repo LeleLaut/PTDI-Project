@@ -4,7 +4,7 @@ import os
 import mysql.connector
 
 mqtt_broker = '0.tcp.ap.ngrok.io'
-mqtt_port = 18080
+mqtt_port = 10208
 ininambah = 0
 csv_file_path = './PIA/mqtt_logs_android.csv'
 list_akhir = []
@@ -46,7 +46,6 @@ def on_message(client, userdata, message):
     payload2 = payload.strip('[]')
     new_payload = payload2.replace('"', '')
     list_akhir = [float(item) for item in new_payload.split(',')]
-    print(list_akhir)
 
     if len(list_akhir) == 11:
         with open(csv_file_path, 'a', newline='') as csvfile:
