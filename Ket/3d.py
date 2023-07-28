@@ -1,30 +1,72 @@
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import matplotlib.animation as animation
 
-# Create some sample data
-x = np.linspace(0, 2 * np.pi, 100)
-y1 = np.sin(x)
-y2 = np.cos(x)
+# Fungsi untuk membuat model balok berdasarkan data Pitch, Roll, dan Yaw
+def create_cuboid(pitch, roll, yaw):
+    # Panjang, lebar, dan tinggi balok
+    length = 1
+    width = 0.5
+    height = 0.2
 
-# Create a figure and two subplots (axes) within it
-fig, (ax1, ax2) = plt.subplots(2, 1)
+    # Sudut Pitch, Roll, dan Yaw dalam radian
+    pitch_rad = np.radians(pitch)
+    roll_rad = np.radians(roll)
+    yaw_rad = np.radians(yaw)
 
-# Plot the first graph in the first subplot
-ax1.plot(x, y1, label='Sin(x)', color='b')
-ax1.set_title('Graph 1: Sin(x)')
-ax1.set_xlabel('x')
-ax1.set_ylabel('y')
-ax1.legend()
+    # Transformasi balok berdasarkan Pitch, Roll, dan Yaw
+    rotation_matrix = np.array([
+        [np.cos(yaw_rad)*np.cos(roll_rad), np.cos(yaw_rad)*np.sin(roll_rad)*np.sin(pitch_rad) - np.sin(yaw_rad)*np.cos(pitch_rad),
+         np.cos(yaw_rad)*np.sin(roll_rad)*np.cos(pitch_rad) + np.sin(yaw_rad)*np.sin(pitch_rad)],
+        [np.sin(roll_rad), np.cos(roll_rad)*np.cos(pitch_rad), -np.cos(roll_rad)*np.sin(pitch_rad)],
+        [-np.sin(yaw_rad)*np.cos(roll_rad), np.sin(yaw_rad)*np.sin(roll_rad)*np.cos(pitch_rad) + np.cos(yaw_rad)*np.sin(pitch_rad),
+         -np.sin(yaw_rad)*np.sin(roll_rad)*np.sin(pitch_rad) + np.cos(yaw_rad)*np.cos(pitch_rad)]
+    ])
 
-# Plot the second graph in the second subplot
-ax2.plot(x, y2, label='Cos(x)', color='r')
-ax2.set_title('Graph 2: Cos(x)')
-ax2.set_xlabel('x')
-ax2.set_ylabel('y')
-ax2.legend()
+    # Define vertices of the cuboid
+    vertices = np.array([[-length / 2, -width / 2, -height / 2],
+                         [length / 2, -width / 2, -height / 2],
+                         [length / 2, width / 2, -height / 2],
+                         [-length / 2, width / 2, -height / 2],
+                         [-length / 2, -width / 2, height / 2],
+                         [length / 2, -width / 2, height / 2],
+                         [length / 2, width / 2, height / 2],
+                         [-length / 2, width / 2, height / 2]])
 
-# Adjust the layout to avoid overlapping labels
-plt.tight_layout()
+    # Apply rotation to the vertices
+    rotated_vertices = np.dot(vertices, rotation_matrix.T)
 
-# Show the figure with both graphs
+    return rotated_vertices
+
+# Fungsi untuk animasi balok 3D
+def animate(i):
+    # Baca data Pitch, Roll, dan Yaw dari sumber data Anda (misalnya dari file CSV)
+    pitch = i  # Contoh sederhana: Pitch berubah sesuai waktu
+    roll = i
+    yaw = i
+
+    # Dapatkan posisi balok 3D yang bergerak sesuai dengan data Pitch, Roll, dan Yaw
+    cuboid_vertices = create_cuboid(pitch, roll, yaw)
+
+    # Perbarui plot balok 3D
+    ax.clear()
+    ax.set_xlim(-2, 2)
+    ax.set_ylim(-2, 2)
+    ax.set_zlim(-2, 2)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_title('Balok 3D Bergerak')
+
+    # Tampilkan balok 3D
+    ax.scatter(cuboid_vertices[:, 0], cuboid_vertices[:, 1], cuboid_vertices[:, 2], c='r', marker='o')
+
+# Inisialisasi plot 3D
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+# Animasi balok 3D
+ani = animation.FuncAnimation(fig, animate, frames=360, interval=50)
+
 plt.show()
