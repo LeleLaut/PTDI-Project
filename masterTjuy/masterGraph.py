@@ -7,10 +7,11 @@ plt.style.use('ggplot')
 
 # Create a figure with 5 subplots
 fig, ((ax1, ax7, ax4),(ax2, ax8, ax5),(ax3, ax9, ax6)) = plt.subplots(3,3, figsize=(8, 6))
+fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
 # fig1, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
 # fig2, ((ax4, ax5, ax6)) = plt.subplots(3,1, figsize=(8, 6))
 # fig3, ((ax7, ax8, ax9)) = plt.subplots(3,1, figsize=(8, 6))
-fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
+#fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
 # fig2.suptitle('Grafik Data Android', fontsize=12, fontweight='bold')
 # fig3.suptitle('Grafik Perbandingan', fontsize=12, fontweight='bold')
 
@@ -155,6 +156,7 @@ def animate(i):
     ax7.clear()
     ax7.plot(Time_andro, P_andro, label='Pitch (Android)', marker='.')
     ax7.plot(Time, P, label='Pitch (Arduino)', marker='.')
+    
     ax7.set_ylim(-180, 180)
     ax7.set_ylabel("Nilai")
     ax7.set_xlabel("TimeStamp (s)")
