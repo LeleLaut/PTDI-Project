@@ -20,6 +20,8 @@ float gyroZerror = 0.01;
 
 float gyroX, gyroY, gyroZ;
 float accX, accY, accZ;
+
+MPU6050 mpu(Wire);
 float degX, degY, degZ;
 
 struct MyData {
@@ -41,8 +43,7 @@ unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE (50)
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
-MPU6050 mpu(Wire);
-int timer = 0;
+
 
 void setup_wifi() {
 
@@ -184,7 +185,7 @@ void degree() {
   snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", degY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  degZ = mpu.getAngleZ();
+  degZ = mpu.getAngleZ() * -1;
   Serial.println(degZ);
   snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", degZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
@@ -212,6 +213,7 @@ void setup() {
   Serial.println("Kartu microSD terdeteksi!");
   SD.remove("data.txt");
   Wire.begin();
+  mpu.begin();
   adampu.begin();
   Serial.println(F("Calculating gyro offset, do not move MPU6050"));
   mpu.calcGyroOffsets();
