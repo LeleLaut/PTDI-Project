@@ -3,59 +3,63 @@ import paho.mqtt.client as mqtt
 import os
 import mysql.connector
 
-if os.path.exists('mqtt_logs.csv'):
-    os.remove('mqtt_logs.csv')
-
+mqtt_broker = '0.tcp.ap.ngrok.io'
+mqtt_port = 10208
+csv_file_path = './PIA/mqtt_logs_arduino.csv'
 subscribed_data = []
 
-# Fungsi untuk menyimpan data ke database MySQL (PHPMyAdmin)
+if os.path.exists(csv_file_path):
+    os.remove(csv_file_path)
+
+# Function to save data to MySQL database (PHPMyAdmin)
 def insert_data_to_database(data):
-    connection = mysql.connector.connect(
-        host='localhost',  # alamat host MySQL
-        user='root',       # username MySQL
-        password='',       # password MySQL
-        database='flightestdb'  # nama database di PHPMyAdmin
-    )
-    cursor = connection.cursor()
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',  # MySQL host address
+            user='root',       # MySQL username
+            password='',       # MySQL password
+            database='flightestdb'  # Replace with the name of the database you created in PHPMyAdmin
+        )
+        cursor = connection.cursor()
 
-    # query INSERT sesuai dengan struktur tabel di database
-    query = "INSERT INTO arduino (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, degree_x, degree_y, degree_z) " \
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    # Konversi data ke tipe float sepanjang 16
-    values = tuple(map(float, data))
+        # Adjust the INSERT query according to the table structure in your database
+        query = "INSERT INTO arduino (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, degree_x, degree_y, degree_z) " \
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        # Convert data to float with precision 16
+        values = tuple(map(float, data))
 
-    cursor.execute(query, values)
-    connection.commit()
+        cursor.execute(query, values)
+        connection.commit()
 
-    cursor.close()
-    connection.close()
+        cursor.close()
+        connection.close()
+    except Exception as e:
+        print(f"Error inserting data into the database: {e}")
 
-# Callback saat klien menerima pesan dari broker
+# Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
+    global subscribed_data
     topic = message.topic
     payload = message.payload.decode('utf-8')
+    subscribed_data.append(payload)
 
-    # Data cleaning: Remove first two digits from each value and split the payload by comma
-    cleaned_payload = [value[2:] for value in payload.split(',')]
-
-    # Convert the values to float
-    try:
-        cleaned_payload = [float(value) for value in cleaned_payload]
-    except ValueError as e:
-        print(f"Error converting data to float: {e}")
-        return
-
-    subscribed_data.extend(cleaned_payload)
-
-    # You can process or filter the data here before saving it to the CSV file
-    # For simplicity, we'll save the topic and payload as-is
     if len(subscribed_data) == 9:
-        with open('mqtt_logs.csv', 'a', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(subscribed_data)
+        try:
+            subscribed_data.sort()
+            cleaned_payload = [value[2:] for value in subscribed_data]
+            cleaned_payload = [float(value) for value in cleaned_payload]
+        except ValueError as e:
+            print(f"Error converting data to float: {e}")
+            subscribed_data.clear()
+            return
 
-        # Kirim data yang berhasil didapat ke database MySQL (PHPMyAdmin)
-        insert_data_to_database(subscribed_data)
+        # Send the successfully received data to the MySQL database (PHPMyAdmin)
+        insert_data_to_database(cleaned_payload)
+
+        # Save data to the CSV file
+        with open(csv_file_path, 'a', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerow(cleaned_payload)
 
         subscribed_data.clear()
 
@@ -66,7 +70,7 @@ client = mqtt.Client()
 client.on_message = on_message
 
 # Connect to the MQTT broker
-client.connect('0.tcp.ap.ngrok.io', 14731, 60)
+client.connect(mqtt_broker, mqtt_port, 60)
 
 # Subscribe to the desired MQTT topic
 client.subscribe([
