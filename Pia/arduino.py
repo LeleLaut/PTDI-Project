@@ -11,21 +11,21 @@ subscribed_data = []
 if os.path.exists(csv_file_path):
     os.remove(csv_file_path)
 
-# Fungsi untuk menyimpan data ke database MySQL (PHPMyAdmin)
+# Function to save data to MySQL database (PHPMyAdmin)
 def insert_data_to_database(data):
     try:
         connection = mysql.connector.connect(
-            host='localhost',  # alamat host MySQL
-            user='root',       # username MySQL
-            password='',       # password MySQL
-            database='flightestdb'  # nama database di PHPMyAdmin
+            host='localhost',  # MySQL host address
+            user='root',       # MySQL username
+            password='',       # MySQL password
+            database='flightestdb'  # Replace with the name of the database you created in PHPMyAdmin
         )
         cursor = connection.cursor()
 
-        # query INSERT sesuai dengan struktur tabel di database
+        # Adjust the INSERT query according to the table structure in your database
         query = "INSERT INTO arduino (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, degree_x, degree_y, degree_z) " \
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        # Konversi data ke tipe float sepanjang 16
+        # Convert data to float with precision 16
         values = tuple(map(float, data))
 
         cursor.execute(query, values)
@@ -36,7 +36,7 @@ def insert_data_to_database(data):
     except Exception as e:
         print(f"Error inserting data into the database: {e}")
 
-# Callback saat klien menerima pesan dari broker
+# Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
     global subscribed_data
     topic = message.topic
@@ -53,10 +53,10 @@ def on_message(client, userdata, message):
             subscribed_data.clear()
             return
 
-        # Kirim data yang berhasil didapat ke database MySQL (PHPMyAdmin)
+        # Send the successfully received data to the MySQL database (PHPMyAdmin)
         insert_data_to_database(cleaned_payload)
 
-        # Simpan data ke file CSV
+        # Save data to the CSV file
         with open(csv_file_path, 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(cleaned_payload)

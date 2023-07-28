@@ -12,22 +12,22 @@ list_akhir = []
 if os.path.exists(csv_file_path):
     os.remove(csv_file_path)
 
-# Fungsi untuk menyimpan data ke database MySQL (PHPMyAdmin)
+# Function to save data to MySQL database (PHPMyAdmin)
 def insert_data_to_database(data):
     try:
         connection = mysql.connector.connect(
-            host='localhost',  # Alamat host MySQL
-            user='root',       # Username MySQL
-            password='',       # Password MySQL
-            database='flightestdb'  # Ganti dengan nama database yang telah Anda buat di PHPMyAdmin
+            host='localhost',  # MySQL host address
+            user='root',       # MySQL username
+            password='',       # MySQL password
+            database='flightestdb'  # Replace with the name of the database you created in PHPMyAdmin
         )
         cursor = connection.cursor()
 
-        # Sesuaikan query INSERT sesuai dengan struktur tabel di database Anda
+        # Adjust the INSERT query according to the table structure in your database
         query = "INSERT INTO android3 (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, sumbu_x, sumbu_y, sumbu_z, latitude, longitude) " \
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-        # Konversi data ke tipe float sepanjang 16
+        # Convert data to float with precision 16
         values = tuple(float(value) for value in data)
 
         cursor.execute(query, values)
@@ -36,11 +36,11 @@ def insert_data_to_database(data):
         cursor.close()
         connection.close()
     except Exception as e:
-        print(f"Error saat menyimpan data ke database: {e}")
+        print(f"Error while saving data to the database: {e}")
 
-# Callback saat klien menerima pesan dari broker
+# Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
-    global ininambah, list_akhir  # Tambahkan deklarasi global untuk variabel ininambah dan list_akhir
+    global ininambah, list_akhir  # Add global declarations for the ininambah and list_akhir variables
     topic = message.topic
     payload = message.payload.decode('utf-8')
     payload2 = payload.strip('[]')
@@ -48,15 +48,13 @@ def on_message(client, userdata, message):
     list_akhir = [float(item) for item in new_payload.split(',')]
     print(list_akhir)
 
-    # You can process or filter the data here before saving it to the CSV file
-    # For simplicity, we'll save the topic and payload as-is
     if len(list_akhir) == 11:
         with open(csv_file_path, 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(list_akhir)
         ininambah += 1
 
-        # Kirim data yang berhasil didapat ke database MySQL (PHPMyAdmin)
+        # Send the successfully received data to the MySQL database (PHPMyAdmin)
         insert_data_to_database(list_akhir)
 
         list_akhir.clear()
