@@ -20,7 +20,9 @@ float gyroZerror = 0.01;
 
 float gyroX, gyroY, gyroZ;
 float accX, accY, accZ;
-float angleX, angleY, angleZ;
+
+MPU6050 mpu(Wire);
+float degX, degY, degZ;
 
 struct MyData {
   byte X;
@@ -41,8 +43,7 @@ unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE (50)
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
-MPU6050 mpu(Wire);
-int timer = 0;
+
 
 void setup_wifi() {
 
@@ -172,27 +173,28 @@ void accelerometer() {
 
 void degree() {
   mpu.update();
+
   Serial.print("P : ");
-  angleX = float(mpu.getAngleX());
-  Serial.print(angleX);
-  snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", angleX);
+  degX = mpu.getAngleX();
+  Serial.print(degX);
+  snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", degX);
   client.publish("Arduino/6 Degree Freedom X |", msg);
   Serial.print(" | R : ");
-  angleY = float(mpu.getAngleY());
-  Serial.print(angleY);
-  snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", angleY);
+  degY = mpu.getAngleY();
+  Serial.print(degY);
+  snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", degY);
   client.publish("Arduino/6 Degree Freedom Y |", msg);
   Serial.print(" | Y : ");
-  angleZ = float(mpu.getAngleZ()) * -1;
-  Serial.println(angleZ);
-  snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", angleZ);
+  degZ = mpu.getAngleZ() * -1;
+  Serial.println(degZ);
+  snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", degZ);
   client.publish("Arduino/6 Degree Freedom Z |", msg);
 }
 
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angleX, angleY, angleZ);
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, degX, degY, degZ);
     dataFile.close();
     Serial.println("Berhasil menulis data ke berkas data.txt.");
   } else {
@@ -203,7 +205,7 @@ void saving_data() {
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 14731);
+  client.setServer(mqtt_server, 18080);
   if (!SD.begin(chipSelect)) {
     Serial.println("Kartu microSD tidak terdeteksi!");
     return;

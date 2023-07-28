@@ -1,68 +1,72 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-import time
+import matplotlib.animation as animation
+
+# Fungsi untuk membuat model balok berdasarkan data Pitch, Roll, dan Yaw
+def create_cuboid(pitch, roll, yaw):
+    # Panjang, lebar, dan tinggi balok
+    length = 1
+    width = 0.5
+    height = 0.2
+
+    # Sudut Pitch, Roll, dan Yaw dalam radian
+    pitch_rad = np.radians(pitch)
+    roll_rad = np.radians(roll)
+    yaw_rad = np.radians(yaw)
+
+    # Transformasi balok berdasarkan Pitch, Roll, dan Yaw
+    rotation_matrix = np.array([
+        [np.cos(yaw_rad)*np.cos(roll_rad), np.cos(yaw_rad)*np.sin(roll_rad)*np.sin(pitch_rad) - np.sin(yaw_rad)*np.cos(pitch_rad),
+         np.cos(yaw_rad)*np.sin(roll_rad)*np.cos(pitch_rad) + np.sin(yaw_rad)*np.sin(pitch_rad)],
+        [np.sin(roll_rad), np.cos(roll_rad)*np.cos(pitch_rad), -np.cos(roll_rad)*np.sin(pitch_rad)],
+        [-np.sin(yaw_rad)*np.cos(roll_rad), np.sin(yaw_rad)*np.sin(roll_rad)*np.cos(pitch_rad) + np.cos(yaw_rad)*np.sin(pitch_rad),
+         -np.sin(yaw_rad)*np.sin(roll_rad)*np.sin(pitch_rad) + np.cos(yaw_rad)*np.cos(pitch_rad)]
+    ])
+
+    # Define vertices of the cuboid
+    vertices = np.array([[-length / 2, -width / 2, -height / 2],
+                         [length / 2, -width / 2, -height / 2],
+                         [length / 2, width / 2, -height / 2],
+                         [-length / 2, width / 2, -height / 2],
+                         [-length / 2, -width / 2, height / 2],
+                         [length / 2, -width / 2, height / 2],
+                         [length / 2, width / 2, height / 2],
+                         [-length / 2, width / 2, height / 2]])
+
+    # Apply rotation to the vertices
+    rotated_vertices = np.dot(vertices, rotation_matrix.T)
+
+    return rotated_vertices
+
+# Fungsi untuk animasi balok 3D
+def animate(i):
+    # Baca data Pitch, Roll, dan Yaw dari sumber data Anda (misalnya dari file CSV)
+    pitch = i  # Contoh sederhana: Pitch berubah sesuai waktu
+    roll = i
+    yaw = i
+
+    # Dapatkan posisi balok 3D yang bergerak sesuai dengan data Pitch, Roll, dan Yaw
+    cuboid_vertices = create_cuboid(pitch, roll, yaw)
+
+    # Perbarui plot balok 3D
+    ax.clear()
+    ax.set_xlim(-2, 2)
+    ax.set_ylim(-2, 2)
+    ax.set_zlim(-2, 2)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_title('Balok 3D Bergerak')
+
+    # Tampilkan balok 3D
+    ax.scatter(cuboid_vertices[:, 0], cuboid_vertices[:, 1], cuboid_vertices[:, 2], c='r', marker='o')
 
 # Inisialisasi plot 3D
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-# Membuat data balok 3D (cuboid)
-length, width, height = 1, 2, 3
-cuboid_vertices = np.array([
-    [0, 0, 0],
-    [length, 0, 0],
-    [length, width, 0],
-    [0, width, 0],
-    [0, 0, height],
-    [length, 0, height],
-    [length, width, height],
-    [0, width, height]
-])
-
-cuboid_edges = [
-    [cuboid_vertices[0], cuboid_vertices[1]],
-    [cuboid_vertices[1], cuboid_vertices[2]],
-    [cuboid_vertices[2], cuboid_vertices[3]],
-    [cuboid_vertices[3], cuboid_vertices[0]],
-    [cuboid_vertices[4], cuboid_vertices[5]],
-    [cuboid_vertices[5], cuboid_vertices[6]],
-    [cuboid_vertices[6], cuboid_vertices[7]],
-    [cuboid_vertices[7], cuboid_vertices[4]],
-    [cuboid_vertices[0], cuboid_vertices[4]],
-    [cuboid_vertices[1], cuboid_vertices[5]],
-    [cuboid_vertices[2], cuboid_vertices[6]],
-    [cuboid_vertices[3], cuboid_vertices[7]],
-]
-
-# Fungsi untuk merotasi balok 3D
-def rotate_cuboid(angle):
-    rot_matrix = np.array([
-        [np.cos(angle), -np.sin(angle), 0],
-        [np.sin(angle), np.cos(angle), 0],
-        [0, 0, 1]
-    ])
-    rotated_cuboid = np.dot(cuboid_vertices, rot_matrix)
-    return rotated_cuboid
-
-# Data sudut rotasi (ubah sesuai dengan kebutuhan Anda)
-angles = np.linspace(0, 2 * np.pi, 100)
-
-# Animasi balok 3D berubah arah sesuai dengan data sudut rotasi
-for angle in angles:
-    ax.clear()
-    rotated_cuboid = rotate_cuboid(angle)
-    for edge in cuboid_edges:
-        edge = np.array(edge)  # Convert the list of vertices to numpy array
-        ax.plot3D(rotated_cuboid[edge[:, 0], 0], rotated_cuboid[edge[:, 0], 1], rotated_cuboid[edge[:, 0], 2], color='b')
-    ax.set_xlim(0, length)
-    ax.set_ylim(0, width)
-    ax.set_zlim(0, height)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    plt.pause(0.01)  # Pause to create animation effect
-    plt.draw()
-    time.sleep(0.01)
+# Animasi balok 3D
+ani = animation.FuncAnimation(fig, animate, frames=360, interval=50)
 
 plt.show()
