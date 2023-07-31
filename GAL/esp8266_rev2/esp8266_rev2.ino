@@ -273,42 +273,46 @@ void degree() {
 }
 
 void publish() {
-
-  // Serial.println(gyroX_5s);
+  
   snprintf(msg, MSG_BUFFER_SIZE, "1 %.2f", gyroX_5s);
   client.publish("Arduino/GYRO X |", msg);
-
-  // Serial.println(gyroY_5s);
+  
   snprintf(msg, MSG_BUFFER_SIZE, "2 %.2f", gyroY_5s);
   client.publish("Arduino/GYRO Y |", msg);
 
-  // Serial.println(gyroZ_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "3 %.2f", gyroZ_5s);
   client.publish("Arduino/GYRO Z |", msg);
 
-  // Serial.println(accX_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "4 %.2f", accX_5s);
   client.publish("Arduino/ACC X |", msg);
 
-  // Serial.println(accY_5s);
+  Serial.println(accY_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "5 %.2f", accY_5s);
   client.publish("Arduino/ACC Y |", msg);
 
-  // Serial.println(accZ_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "6 %.2f", accZ_5s);
   client.publish("Arduino/ACC Z |", msg);
 
-  // Serial.println(pitch_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", pitch_5s);
   client.publish("Arduino/P |", msg);
 
-  // Serial.println(roll_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", roll_5s);
   client.publish("Arduino/R |", msg);
 
-  // Serial.println(yaw_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", yaw_5s);
   client.publish("Arduino/Y |", msg);
+
+  for (int = 0; i<5; i++){
+    Serial.println(gyroX_5s);
+    Serial.println(gyroY_5s);
+    Serial.println(gyroZ_5s);
+    Serial.println(accX_5s);
+    Serial.println(accY_5s);
+    Serial.println(accZ_5s);
+    Serial.println(pitch_5s);
+    Serial.println(roll_5s);
+    Serial.println(yaw_5s);
+  }
 }
 
 void monitoring() {
