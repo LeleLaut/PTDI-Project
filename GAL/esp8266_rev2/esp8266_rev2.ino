@@ -6,13 +6,13 @@
 #include <SPI.h>
 #include <SD.h>
 
-const unsigned long interval1 = 1000;  // Contoh delay 1 detik
-const unsigned long interval2 = 100;   // Contoh delay 0.5 detik
+const unsigned long interval1 = 1000;  
+const unsigned long interval2 = 100;   
 const unsigned long interval3 = 5000;
 
 unsigned long previousMillis1 = 0;  // Menyimpan waktu terakhir delay 1
 unsigned long previousMillis2 = 0;  // Menyimpan waktu terakhir delay 2
-unsigned long previousMillis3 = 0;  // Menyimpan waktu terakhir delay 2
+unsigned long previousMillis3 = 0;  // Menyimpan waktu terakhir delay 3
 
 const int chipSelect = D8;
 
