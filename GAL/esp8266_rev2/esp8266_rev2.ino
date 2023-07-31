@@ -414,15 +414,15 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();  // Mendapatkan waktu saat ini
 
-  // Delay pertama
-  if (currentMillis - previousMillis1 >= interval1) {
-    // Menyimpan waktu terakhir delay 1
-    previousMillis1 = currentMillis;
-    if (!client.connected()) {
-      reconnect();
-    }
-    client.loop();
-  }
+  // // Delay pertama
+  // if (currentMillis - previousMillis1 >= interval1) {
+  //   // Menyimpan waktu terakhir delay 1
+  //   previousMillis1 = currentMillis;
+  //   if (!client.connected()) {
+  //     reconnect();
+  //   }
+  //   client.loop();
+  // }
 
   // Delay kedua
   if (currentMillis - previousMillis2 >= interval2) {
@@ -435,6 +435,7 @@ void loop() {
   }
   if (currentMillis - previousMillis3 >= interval3) {
     previousMillis3 = currentMillis;  // Menyimpan waktu terakhir delay 3
+    monitoring();
     publish();
   }
 }
