@@ -388,7 +388,7 @@ void saving_data() {
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, mqtt_port);
+  client.setServer(mqtt_server, 1883);
   if (!SD.begin(chipSelect)) {
     Serial.println("Kartu microSD tidak terdeteksi!");
     return;
