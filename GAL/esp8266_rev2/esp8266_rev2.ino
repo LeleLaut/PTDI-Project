@@ -54,17 +54,17 @@ float P_pitch[2][2] = { { 0, 0 }, { 0, 0 } };
 float P_roll[2][2] = { { 0, 0 }, { 0, 0 } };
 float P_yaw[2][2] = { { 0, 0 }, { 0, 0 } };
 
-float gyroX_5s[5];
-float gyroY_5s[5];
-float gyroZ_5s[5];
+float gyroX_5s[5]={0,0,0,0,0};
+float gyroY_5s[5]={0,0,0,0,0};
+float gyroZ_5s[5]={0,0,0,0,0};
 
-float accX_5s[5];
-float accY_5s[5];
-float accZ_5s[5];
+float accX_5s[5]={0,0,0,0,0};
+float accY_5s[5]={0,0,0,0,0};
+float accZ_5s[5]={0,0,0,0,0};
 
-float pitch_5s[5];
-float roll_5s[5];
-float yaw_5s[5];
+float pitch_5s[5]={0,0,0,0,0};
+float roll_5s[5]={0,0,0,0,0};
+float yaw_5s[5]={0,0,0,0,0};
 
 int pencacahArray = 0;
 
@@ -79,7 +79,9 @@ MyData data;
 // Update these with values suitable for your network.
 const char *ssid = "Kazarach IP";
 const char *password = "modalcok";
-const char *mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org
+const char *mqtt_server = "172.20.10.4";  // test.mosquitto.org
+const int mqtt_port = 1883;
+
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -272,39 +274,39 @@ void degree() {
 
 void publish() {
 
-  Serial.println(gyroX_5s);
+  // Serial.println(gyroX_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "1 %.2f", gyroX_5s);
   client.publish("Arduino/GYRO X |", msg);
 
-  Serial.println(gyroY_5s);
+  // Serial.println(gyroY_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "2 %.2f", gyroY_5s);
   client.publish("Arduino/GYRO Y |", msg);
 
-  Serial.println(gyroZ_5s);
+  // Serial.println(gyroZ_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "3 %.2f", gyroZ_5s);
   client.publish("Arduino/GYRO Z |", msg);
 
-  Serial.println(accX_5s);
+  // Serial.println(accX_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "4 %.2f", accX_5s);
   client.publish("Arduino/ACC X |", msg);
 
-  Serial.println(accY_5s);
+  // Serial.println(accY_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "5 %.2f", accY_5s);
   client.publish("Arduino/ACC Y |", msg);
 
-  Serial.println(accZ_5s);
+  // Serial.println(accZ_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "6 %.2f", accZ_5s);
   client.publish("Arduino/ACC Z |", msg);
 
-  Serial.println(pitch_5s);
+  // Serial.println(pitch_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", pitch_5s);
   client.publish("Arduino/P |", msg);
 
-  Serial.println(roll_5s);
+  // Serial.println(roll_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", roll_5s);
   client.publish("Arduino/R |", msg);
 
-  Serial.println(yaw_5s);
+  // Serial.println(yaw_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", yaw_5s);
   client.publish("Arduino/Y |", msg);
 }
