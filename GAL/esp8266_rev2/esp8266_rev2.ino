@@ -77,10 +77,10 @@ struct MyData {
 MyData data;
 
 // Update these with values suitable for your network.
-const char *ssid = "Kazarach IP";
-const char *password = "modalcok";
-const char *mqtt_server = "172.20.10.4";  // test.mosquitto.org
-const int mqtt_port = 1883;
+const char *ssid = "AlifiaMR";
+const char *password = "YUI12345";
+const char *mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org
+const int mqtt_port = 10752;
 
 
 WiFiClient espClient;
@@ -286,7 +286,6 @@ void publish() {
   snprintf(msg, MSG_BUFFER_SIZE, "4 %.2f", accX_5s);
   client.publish("Arduino/ACC X |", msg);
 
-  Serial.println(accY_5s);
   snprintf(msg, MSG_BUFFER_SIZE, "5 %.2f", accY_5s);
   client.publish("Arduino/ACC Y |", msg);
 
@@ -302,16 +301,16 @@ void publish() {
   snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", yaw_5s);
   client.publish("Arduino/Y |", msg);
 
-  for (int = 0; i<5; i++){
-    Serial.println(gyroX_5s);
-    Serial.println(gyroY_5s);
-    Serial.println(gyroZ_5s);
-    Serial.println(accX_5s);
-    Serial.println(accY_5s);
-    Serial.println(accZ_5s);
-    Serial.println(pitch_5s);
-    Serial.println(roll_5s);
-    Serial.println(yaw_5s);
+  for (int i = 0; i<5; i++){
+    Serial.println(gyroX_5s[i]);
+    Serial.println(gyroY_5s[i]);
+    Serial.println(gyroZ_5s[i]);
+    Serial.println(accX_5s[i]);
+    Serial.println(accY_5s[i]);
+    Serial.println(accZ_5s[i]);
+    Serial.println(pitch_5s[i]);
+    Serial.println(roll_5s[i]);
+    Serial.println(yaw_5s[i]);
   }
 }
 
@@ -392,7 +391,7 @@ void saving_data() {
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, mqtt_port);
   if (!SD.begin(chipSelect)) {
     Serial.println("Kartu microSD tidak terdeteksi!");
     return;
