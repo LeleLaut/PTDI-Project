@@ -6,6 +6,14 @@
 #include <SPI.h>
 #include <SD.h>
 
+const unsigned long interval1 = 1000;  // Contoh delay 1 detik
+const unsigned long interval2 = 100;   // Contoh delay 0.5 detik
+const unsigned long interval3 = 5000;
+
+unsigned long previousMillis1 = 0;  // Menyimpan waktu terakhir delay 1
+unsigned long previousMillis2 = 0;  // Menyimpan waktu terakhir delay 2
+unsigned long previousMillis3 = 0;  // Menyimpan waktu terakhir delay 2
+
 const int chipSelect = D8;
 
 Adafruit_MPU6050 adampu;
@@ -24,27 +32,41 @@ float accX, accY, accZ;
 MPU6050 mpu;
 
 // Konstanta Kalman Filter
-const float Q_angle = 0.001;  // Variance dari estimasi ketidakpastian sensor
-const float Q_bias = 0.003;   // Variance dari estimasi ketidakpastian bias
-const float R_measure = 0.03; // Variance dari ketidakpastian pengukuran
+const float Q_angle = 0.001;   // Variance dari estimasi ketidakpastian sensor
+const float Q_bias = 0.003;    // Variance dari estimasi ketidakpastian bias
+const float R_measure = 0.03;  // Variance dari ketidakpastian pengukuran
 
 // State Kalman Filter untuk setiap sumbu
-float angle_pitch = 0; // Sudut hasil estimasi Pitch
-float angle_roll = 0;  // Sudut hasil estimasi Roll
-float angle_yaw = 0;   // Sudut hasil estimasi Yaw
+float angle_pitch = 0;  // Sudut hasil estimasi Pitch
+float angle_roll = 0;   // Sudut hasil estimasi Roll
+float angle_yaw = 0;    // Sudut hasil estimasi Yaw
 
-float bias_pitch = 0; // Bias hasil estimasi Pitch
-float bias_roll = 0;  // Bias hasil estimasi Roll
-float bias_yaw = 0;   // Bias hasil estimasi Yaw
+float bias_pitch = 0;  // Bias hasil estimasi Pitch
+float bias_roll = 0;   // Bias hasil estimasi Roll
+float bias_yaw = 0;    // Bias hasil estimasi Yaw
 
-float rate_pitch = 0; // Derivatif sudut dari sensor Pitch
-float rate_roll = 0;  // Derivatif sudut dari sensor Roll
-float rate_yaw = 0;   // Derivatif sudut dari sensor Yaw
+float rate_pitch = 0;  // Derivatif sudut dari sensor Pitch
+float rate_roll = 0;   // Derivatif sudut dari sensor Roll
+float rate_yaw = 0;    // Derivatif sudut dari sensor Yaw
 
 // Posisi Covariance untuk setiap sumbu
-float P_pitch[2][2] = {{0, 0}, {0, 0}};
-float P_roll[2][2] = {{0, 0}, {0, 0}};
-float P_yaw[2][2] = {{0, 0}, {0, 0}};
+float P_pitch[2][2] = { { 0, 0 }, { 0, 0 } };
+float P_roll[2][2] = { { 0, 0 }, { 0, 0 } };
+float P_yaw[2][2] = { { 0, 0 }, { 0, 0 } };
+
+float gyroX_5s[5];
+float gyroY_5s[5];
+float gyroZ_5s[5];
+
+float accX_5s[5];
+float accY_5s[5];
+float accZ_5s[5];
+
+float pitch_5s[5];
+float roll_5s[5];
+float yaw_5s[5];
+
+int pencacahArray = 0;
 
 struct MyData {
   byte X;
@@ -151,22 +173,6 @@ void gyroScope() {
   if (abs(gyroZ_temp) > gyroZerror) {
     gyroZ += gyroZ_temp / 90.00;
   }
-  Serial.println("GYROSCOPE");
-  Serial.print("X = ");
-  Serial.print(gyroX);
-  Serial.print(" rad/s  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "1 %.2f", gyroX);
-  client.publish("Arduino/GYRO X |", msg);
-  Serial.print("Y = ");
-  Serial.print(gyroY);
-  Serial.print(" rad/s  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "2 %.2f", gyroY);
-  client.publish("Arduino/GYRO Y |", msg);
-  Serial.print("Z = ");
-  Serial.print(gyroZ);
-  Serial.println(" rad/s");
-  snprintf(msg, MSG_BUFFER_SIZE, "3 %.2f", gyroZ);
-  client.publish("Arduino/GYRO Z |", msg);
 }
 
 void accelerometer() {
@@ -175,52 +181,36 @@ void accelerometer() {
   accX = a.acceleration.x;
   accY = a.acceleration.y;
   accZ = a.acceleration.z;
-  Serial.println("ACCELEROMETER");
-  Serial.print("X = ");
-  Serial.print(accX);
-  Serial.print(" m/s2  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "4 %.2f", accX);
-  client.publish("Arduino/ACC X |", msg);
-  Serial.print("Y = ");
-  Serial.print(accY);
-  Serial.print(" m/s2  |");
-  snprintf(msg, MSG_BUFFER_SIZE, "5 %.2f", accY);
-  client.publish("Arduino/ACC Y |", msg);
-  Serial.print("Z = ");
-  Serial.print(accZ);
-  Serial.println(" m/s2");
-  snprintf(msg, MSG_BUFFER_SIZE, "6 %.2f", accZ);
-  client.publish("Arduino/ACC Z |", msg);
 }
 
 void degree() {
-// Baca data dari MPU6050
+  // Baca data dari MPU6050
   int16_t ax, ay, az, gx, gy, gz;
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
 
   // Konversi data gyro menjadi derajat per detik
-  float gyroRate_pitch = (float)gx / 131.0; // 131 LSB per deg/s
-  float gyroRate_roll = (float)gy / 131.0;  // 131 LSB per deg/s
-  float gyroRate_yaw = (float)gz / 131.0;   // 131 LSB per deg/s
+  float gyroRate_pitch = (float)gx / 131.0;  // 131 LSB per deg/s
+  float gyroRate_roll = (float)gy / 131.0;   // 131 LSB per deg/s
+  float gyroRate_yaw = (float)gz / 131.0;    // 131 LSB per deg/s
 
   // Prediksi sudut berdasarkan rate gyro untuk setiap sumbu
-  float dt = 0.01; // Interval waktu (waktu sampling) dalam detik
+  float dt = 0.01;  // Interval waktu (waktu sampling) dalam detik
   angle_pitch += dt * (gyroRate_pitch - bias_pitch);
   angle_roll += dt * (gyroRate_roll - bias_roll);
   angle_yaw += dt * (gyroRate_yaw - bias_yaw);
 
   // Update Covariance Matrix (P) untuk setiap sumbu
-  P_pitch[0][0] += dt * (dt*P_pitch[1][1] - P_pitch[0][1] - P_pitch[1][0] + Q_angle);
+  P_pitch[0][0] += dt * (dt * P_pitch[1][1] - P_pitch[0][1] - P_pitch[1][0] + Q_angle);
   P_pitch[0][1] -= dt * P_pitch[1][1];
   P_pitch[1][0] -= dt * P_pitch[1][1];
   P_pitch[1][1] += Q_bias * dt;
 
-  P_roll[0][0] += dt * (dt*P_roll[1][1] - P_roll[0][1] - P_roll[1][0] + Q_angle);
+  P_roll[0][0] += dt * (dt * P_roll[1][1] - P_roll[0][1] - P_roll[1][0] + Q_angle);
   P_roll[0][1] -= dt * P_roll[1][1];
   P_roll[1][0] -= dt * P_roll[1][1];
   P_roll[1][1] += Q_bias * dt;
 
-  P_yaw[0][0] += dt * (dt*P_yaw[1][1] - P_yaw[0][1] - P_yaw[1][0] + Q_angle);
+  P_yaw[0][0] += dt * (dt * P_yaw[1][1] - P_yaw[0][1] - P_yaw[1][0] + Q_angle);
   P_yaw[0][1] -= dt * P_yaw[1][1];
   P_yaw[1][0] -= dt * P_yaw[1][1];
   P_yaw[1][1] += Q_bias * dt;
@@ -239,7 +229,7 @@ void degree() {
   K_yaw[1] = P_yaw[1][0] / (P_yaw[0][0] + R_measure);
 
   // Update sudut berdasarkan pengukuran (accelerometer) untuk setiap sumbu
-  float accAngle_pitch = atan2(ay, az) * RAD_TO_DEG; // Menggunakan atan2 untuk mendapatkan sudut dari accelerometer
+  float accAngle_pitch = atan2(ay, az) * RAD_TO_DEG;  // Menggunakan atan2 untuk mendapatkan sudut dari accelerometer
   float error_pitch = accAngle_pitch - angle_pitch;
   angle_pitch += K_pitch[0] * error_pitch;
   bias_pitch += K_pitch[1] * error_pitch;
@@ -278,37 +268,109 @@ void degree() {
   P_yaw[0][1] -= K_yaw[0] * P01_temp_yaw;
   P_yaw[1][0] -= K_yaw[1] * P00_temp_yaw;
   P_yaw[1][1] -= K_yaw[1] * P01_temp_yaw;
+}
 
-  // Output hasil estimasi untuk setiap sumbu
-  Serial.print("Filtered Angle Pitch: ");
-  Serial.print(angle_pitch);
-  Serial.print("\tRoll: ");
-  Serial.print(angle_roll);
-  Serial.print("\tYaw: ");
-  Serial.println(angle_yaw);
+void publish() {
 
-  Serial.print("P : ");
-  Serial.print(angle_pitch);
-  snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", angle_pitch);
+  snprintf(msg, MSG_BUFFER_SIZE, "1 %.2f", gyroX_5s);
+  client.publish("Arduino/GYRO X |", msg);
+
+  snprintf(msg, MSG_BUFFER_SIZE, "2 %.2f", gyroY_5s);
+  client.publish("Arduino/GYRO Y |", msg);
+
+  snprintf(msg, MSG_BUFFER_SIZE, "3 %.2f", gyroZ_5s);
+  client.publish("Arduino/GYRO Z |", msg);
+
+  snprintf(msg, MSG_BUFFER_SIZE, "4 %.2f", accX_5s);
+  client.publish("Arduino/ACC X |", msg);
+
+  snprintf(msg, MSG_BUFFER_SIZE, "5 %.2f", accY_5s);
+  client.publish("Arduino/ACC Y |", msg);
+
+  snprintf(msg, MSG_BUFFER_SIZE, "6 %.2f", accZ_5s);
+  client.publish("Arduino/ACC Z |", msg);
+
+  snprintf(msg, MSG_BUFFER_SIZE, "7 %.2f", pitch_5s);
   client.publish("Arduino/P |", msg);
-  Serial.print(" | R : ");
-  Serial.print(angle_roll);
-  snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", angle_roll);
+
+  snprintf(msg, MSG_BUFFER_SIZE, "8 %.2f", roll_5s);
   client.publish("Arduino/R |", msg);
-  Serial.print(" | Y : ");
-  Serial.println(angle_yaw);
-  snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", angle_yaw);
+
+  snprintf(msg, MSG_BUFFER_SIZE, "9 %.2f", yaw_5s);
   client.publish("Arduino/Y |", msg);
 }
 
+void monitoring() {
+  Serial.println("GYROSCOPE");
+  Serial.print("X = ");
+  Serial.print(gyroX);
+  Serial.print(" rad/s  |");
+  Serial.print("Y = ");
+  Serial.print(gyroY);
+  Serial.print(" rad/s  |");
+
+  Serial.print("Z = ");
+  Serial.print(gyroZ);
+  Serial.println(" rad/s");
+
+
+  Serial.println("ACCELEROMETER");
+  Serial.print("X = ");
+  Serial.print(accX);
+  Serial.print(" m/s2  |");
+
+  Serial.print("Y = ");
+  Serial.print(accY);
+  Serial.print(" m/s2  |");
+
+  Serial.print("Z = ");
+  Serial.print(accZ);
+  Serial.println(" m/s2");
+
+
+  Serial.print("P : ");
+  Serial.print(angle_pitch);
+
+  Serial.print(" | R : ");
+  Serial.print(angle_roll);
+
+  Serial.print(" | Y : ");
+  Serial.println(angle_yaw);
+}
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
     dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll, angle_yaw);
     dataFile.close();
-    Serial.println("Berhasil menulis data ke berkas data.txt.");
-  } else {
-    Serial.println("Gagal membuat atau membuka berkas data.txt.");
+  }
+
+  gyroX_5s[pencacahArray] = gyroX;
+  gyroY_5s[pencacahArray] = gyroY;
+  gyroZ_5s[pencacahArray] = gyroZ;
+
+  accX_5s[pencacahArray] = accX;
+  accY_5s[pencacahArray] = accY;
+  accZ_5s[pencacahArray] = accZ;
+
+  pitch_5s[pencacahArray] = angle_pitch;
+  roll_5s[pencacahArray] = angle_roll;
+  yaw_5s[pencacahArray] = angle_yaw;
+  pencacahArray += 1;
+  if (pencacahArray = 5) {
+    pencacahArray = 0;
+    for (int i = 0; i < 5; i++) {
+      gyroX_5s[i] = 0;
+      gyroY_5s[i] = 0;
+      gyroZ_5s[i] = 0;
+
+      accX_5s[i] = 0;
+      accY_5s[i] = 0;
+      accZ_5s[i] = 0;
+
+      pitch_5s[i] = 0;
+      roll_5s[i] = 0;
+      yaw_5s[i] = 0;
+    }
   }
 }
 
@@ -325,7 +387,7 @@ void setup() {
   Wire.begin();
   mpu.initialize();
   adampu.begin();
-   // Atur nilai awal state dan P untuk setiap sumbu
+  // Atur nilai awal state dan P untuk setiap sumbu
   angle_pitch = 0;
   bias_pitch = 0;
   P_pitch[0][0] = 0;
@@ -348,15 +410,31 @@ void setup() {
   P_yaw[1][1] = 0;
 }
 
-void loop() {
-  // if (!client.connected()) {
-  //   reconnect();
-  // }
-  // client.loop();
 
-  gyroScope();
-  accelerometer();
-  degree();
-  saving_data();
-  delay(1000);
+void loop() {
+  unsigned long currentMillis = millis();  // Mendapatkan waktu saat ini
+
+  // Delay pertama
+  if (currentMillis - previousMillis1 >= interval1) {
+    // Menyimpan waktu terakhir delay 1
+    previousMillis1 = currentMillis;
+    if (!client.connected()) {
+      reconnect();
+    }
+    client.loop();
+  }
+
+  // Delay kedua
+  if (currentMillis - previousMillis2 >= interval2) {
+    previousMillis2 = currentMillis;  // Menyimpan waktu terakhir delay 2
+
+    gyroScope();
+    accelerometer();
+    degree();
+    saving_data();
+  }
+  if (currentMillis - previousMillis3 >= interval3) {
+    previousMillis3 = currentMillis;  // Menyimpan waktu terakhir delay 3
+    publish();
+  }
 }
