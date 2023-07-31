@@ -388,7 +388,7 @@ void saving_data() {
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 12560);
+  client.setServer(mqtt_server, mqtt_port);
   if (!SD.begin(chipSelect)) {
     Serial.println("Kartu microSD tidak terdeteksi!");
     return;
@@ -425,15 +425,15 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();  // Mendapatkan waktu saat ini
 
-  // // Delay pertama
-  // if (currentMillis - previousMillis1 >= interval1) {
-  //   // Menyimpan waktu terakhir delay 1
-  //   previousMillis1 = currentMillis;
-  //   if (!client.connected()) {
-  //     reconnect();
-  //   }
-  //   client.loop();
-  // }
+  // Delay pertama
+  if (currentMillis - previousMillis1 >= interval1) {
+    // Menyimpan waktu terakhir delay 1
+    previousMillis1 = currentMillis;
+    if (!client.connected()) {
+      reconnect();
+    }
+    client.loop();
+  }
 
   // Delay kedua
   if (currentMillis - previousMillis2 >= interval2) {
