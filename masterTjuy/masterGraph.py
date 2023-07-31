@@ -6,14 +6,17 @@ from matplotlib import style
 plt.style.use('ggplot')
 
 # Create a figure with 5 subplots
-fig, ((ax1, ax7, ax4),(ax2, ax8, ax5),(ax3, ax9, ax6)) = plt.subplots(3,3, figsize=(8, 6))
+fig, ((ax3, ax7, ax6),(ax2, ax8, ax5),(ax1, ax9, ax4)) = plt.subplots(3,3, figsize=(8, 6))
 fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
-# fig1, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
+# fig, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
 # fig2, ((ax4, ax5, ax6)) = plt.subplots(3,1, figsize=(8, 6))
 # fig3, ((ax7, ax8, ax9)) = plt.subplots(3,1, figsize=(8, 6))
-#fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
+# fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
 # fig2.suptitle('Grafik Data Android', fontsize=12, fontweight='bold')
 # fig3.suptitle('Grafik Perbandingan', fontsize=12, fontweight='bold')
+
+# fig, (ax6) = plt.subplots(3,1, figsize=(8, 6))
+
 
 def animate(i):
     graph_data = open('mqtt_logs_ardu.csv', 'r').readlines()
@@ -61,6 +64,7 @@ def animate(i):
     ax1.set_ylim(-360, 360)
     ax1.set_ylabel("Nilai")
     ax1.set_xlabel("TimeStamp (s)")
+    
     ax1.legend()
 
     ax2.clear()
@@ -77,6 +81,7 @@ def animate(i):
     ax3.plot(Time, R, label='Roll', marker='.')
     ax3.plot(Time, Y, label='Yaw', marker='.')
     ax3.set_ylim(-360, 360)
+    ax3.set_title('Arduino')
     ax3.set_ylabel("Nilai")
     ax3.set_xlabel("TimeStamp (s)")
     ax3.legend()
@@ -151,15 +156,16 @@ def animate(i):
     ax6.set_ylim(-360, 360)
     ax6.set_ylabel("Nilai")
     ax6.set_xlabel("TimeStamp (s)")
+    ax6.set_title('Android')
     ax6.legend()
 
     ax7.clear()
     ax7.plot(Time_andro, P_andro, label='Pitch (Android)', marker='.')
     ax7.plot(Time, P, label='Pitch (Arduino)', marker='.')
-    
     ax7.set_ylim(-180, 180)
     ax7.set_ylabel("Nilai")
     ax7.set_xlabel("TimeStamp (s)")
+    ax7.set_title('Perbandingan')
     ax7.legend()
 
     ax8.clear()
@@ -173,7 +179,7 @@ def animate(i):
     ax9.clear()
     ax9.plot(Time_andro, Y_andro, label='Yaw (Android)', marker='.')
     ax9.plot(Time, Y, label='Yaw (Arduino)', marker='.')
-    ax9.set_ylim(-180, 180)
+    ax9.set_ylim(0, 360)
     ax9.set_ylabel("Nilai")
     ax9.set_xlabel("TimeStamp (s)")
     ax9.legend()
