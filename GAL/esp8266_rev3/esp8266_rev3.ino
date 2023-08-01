@@ -5,6 +5,15 @@
 #include <Adafruit_MPU6050.h>
 #include <SPI.h>
 #include <SD.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_HMC5883_U.h>
+
+#define I2C_SDA_PIN D2  // GY-273 SDA pin (D2 on NodeMCU, GPIO4 on Wemos D1 Mini)
+#define I2C_SCL_PIN D1  // GY-273 SCL pin (D1 on NodeMCU, GPIO5 on Wemos D1 Mini)
+
+Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
+float yaw_offset = 0.0;  // Variabel untuk menyimpan nilai referensi yaw
+float angle_yaw;
 
 const unsigned long interval1 = 1000;
 const unsigned long interval2 = 200;
@@ -183,25 +192,28 @@ void accelerometer() {
 
 void degree() {
   // Baca data dari MPU6050
-   int16_t ax, ay, az, gx, gy, gz;
+  int16_t ax, ay, az, gx, gy, gz;
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
 
+  sensors_event_t event;
+  mag.getEvent(&event);
+
   // Konversi data gyro menjadi derajat per detik
-  float gyroRate_pitch = (float)gx / 131.0; // 131 LSB per deg/s
-  float gyroRate_roll = (float)gy / 131.0;  // 131 LSB per deg/s
+  float gyroRate_pitch = (float)gx / 131.0;  // 131 LSB per deg/s
+  float gyroRate_roll = (float)gy / 131.0;   // 131 LSB per deg/s
 
   // Prediksi sudut berdasarkan rate gyro untuk setiap sumbu
-  float dt = 0.01; // Interval waktu (waktu sampling) dalam detik
+  float dt = 0.01;  // Interval waktu (waktu sampling) dalam detik
   angle_pitch += dt * (gyroRate_pitch - bias_pitch);
   angle_roll += dt * (gyroRate_roll - bias_roll);
 
   // Update Covariance Matrix (P) untuk setiap sumbu
-  P_pitch[0][0] += dt * (dt*P_pitch[1][1] - P_pitch[0][1] - P_pitch[1][0] + Q_angle);
+  P_pitch[0][0] += dt * (dt * P_pitch[1][1] - P_pitch[0][1] - P_pitch[1][0] + Q_angle);
   P_pitch[0][1] -= dt * P_pitch[1][1];
   P_pitch[1][0] -= dt * P_pitch[1][1];
   P_pitch[1][1] += Q_bias * dt;
 
-  P_roll[0][0] += dt * (dt*P_roll[1][1] - P_roll[0][1] - P_roll[1][0] + Q_angle);
+  P_roll[0][0] += dt * (dt * P_roll[1][1] - P_roll[0][1] - P_roll[1][0] + Q_angle);
   P_roll[0][1] -= dt * P_roll[1][1];
   P_roll[1][0] -= dt * P_roll[1][1];
   P_roll[1][1] += Q_bias * dt;
@@ -216,7 +228,7 @@ void degree() {
   K_roll[1] = P_roll[1][0] / (P_roll[0][0] + R_measure);
 
   // Update sudut berdasarkan pengukuran (accelerometer) untuk setiap sumbu
-  float accAngle_pitch = atan2(ay, az) * RAD_TO_DEG; // Menggunakan atan2 untuk mendapatkan sudut dari accelerometer
+  float accAngle_pitch = atan2(ay, az) * RAD_TO_DEG;  // Menggunakan atan2 untuk mendapatkan sudut dari accelerometer
   float error_pitch = accAngle_pitch - angle_pitch;
   angle_pitch += K_pitch[0] * error_pitch;
   bias_pitch += K_pitch[1] * error_pitch;
@@ -242,6 +254,22 @@ void degree() {
   P_roll[0][1] -= K_roll[0] * P01_temp_roll;
   P_roll[1][0] -= K_roll[1] * P00_temp_roll;
   P_roll[1][1] -= K_roll[1] * P01_temp_roll;
+
+  float heading = atan2(event.magnetic.y, event.magnetic.x);
+  if (heading < 0) heading += 2 * PI;
+
+  float heading_deg = heading * 180 / PI;
+  angle_yaw = heading_deg - yaw_offset; // Menggunakan nilai referensi yaw
+
+  // Normalisasi yaw ke dalam range 0 - 360 derajat
+  if (angle_yaw < 0) {
+    angle_yaw += 360;
+  }
+
+  Serial.print("Yaw: ");
+  Serial.print(angle_yaw);
+  Serial.println(" degrees");
+
 }
 
 void publish() {
@@ -482,6 +510,25 @@ void saving_data() {
   }
 }
 
+void calibrateYaw() {
+  float sum_yaw = 0;
+  int num_samples = 100;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
+
+  // Mengambil beberapa sampel yaw dan menghitung rata-rata
+  for (int i = 0; i < num_samples; i++) {
+    sensors_event_t event;
+    mag.getEvent(&event);
+    float heading = atan2(event.magnetic.y, event.magnetic.x);
+    if (heading < 0) heading += 2 * PI;
+    float heading_deg = heading * 180 / PI;
+    sum_yaw += heading_deg;
+    delay(10);  // Jeda 10 ms antara sampel
+  }
+
+  // Menghitung nilai rata-rata yaw sebagai referensi
+  yaw_offset = sum_yaw / num_samples;
+}
+
 void setup() {
   Serial.begin(115200);
   setup_wifi();
@@ -492,8 +539,17 @@ void setup() {
   }
   Serial.println("Kartu microSD terdeteksi!");
   SD.remove("data.txt");
-  Wire.begin();
+  Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
   mpu.initialize();
+  if (!mag.begin()) {
+    Serial.println("Could not find a valid HMC5883L sensor, check wiring!");
+    return;
+  }
+
+  Serial.println("HMC5883L sensor detected");
+
+  // Menjalankan kalibrasi yaw saat program pertama kali dijalankan
+  calibrateYaw();
   adampu.begin();
   // Atur nilai awal state dan P untuk setiap sumbu
   angle_pitch = 0;
