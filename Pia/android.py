@@ -1,11 +1,10 @@
 import csv
 import paho.mqtt.client as mqtt
 import os
-import ssl
 import mysql.connector
 
-if os.path.exists('./PIA/mqtt_logs_android.csv'):
-    os.remove('./PIA/mqtt_logs_android.csv')
+if os.path.exists('./KAZ/mqtt_logs_andro.csv'):
+    os.remove('./KAZ/mqtt_logs_andro.csv')
 
 mqtt_port = 19716
 ininambah = 0
@@ -16,9 +15,9 @@ list_akhir = []
 def insert_data_to_database(data):
     try:
         connection = mysql.connector.connect(
-            host='localhost',  # MySQL host address
-            user='root',       # MySQL username
-            password='',       # MySQL password
+            host='localhost',   # MySQL host address
+            user='root',        # MySQL username
+            password='',        # MySQL password
             database='flightestdb'  # Replace with the name of the database you created in PHPMyAdmin
         )
         cursor = connection.cursor()
@@ -27,7 +26,10 @@ def insert_data_to_database(data):
         query = "INSERT INTO android3 (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, sumbu_x, sumbu_y, sumbu_z, latitude, longitude) " \
                 "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-        cursor.executemany(query, data)
+        # Convert data to float with precision 2
+        data_float = [[round(float(value), 2) for value in sublist] for sublist in data]
+
+        cursor.executemany(query, data_float)
         connection.commit()
 
         cursor.close()
@@ -37,24 +39,30 @@ def insert_data_to_database(data):
 
 # Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
-    global ininambah
+    global ininambah, list_akhir
     topic = message.topic
     payload = message.payload.decode('utf-8')
     payload2 = payload.strip('[]')
     new_payload = payload2.replace('"', '')
+    # list_akhir = [float(item) for item in new_payload.split(',')]
     list_akhir = eval(payload)
 
     if len(list_akhir) == 5:
         for i, sublist in enumerate(list_akhir):
-            list_akhir[i].append(ininambah)
-            ininambah += 1
-            with open('./PIA/mqtt_logs_android.csv', 'a', newline='') as csvfile:
-                csv_writer = csv.writer(csvfile)
-                csv_writer.writerow(list_akhir[i])
+            # Check if all elements in sublist are numbers
+            if all(isinstance(value, (int, float)) for value in sublist):
+                list_akhir[i].append(ininambah)
+                ininambah += 1
+                with open('./KAZ/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
+                    csv_writer = csv.writer(csvfile)
+                    csv_writer.writerow(list_akhir[i])
                 
         # Send the successfully received data to the MySQL database (PHPMyAdmin)
-        insert_data_to_database(list_akhir)
+        # Filter data to only include numeric values before sending to the database
+        numeric_data = [sublist for sublist in list_akhir if all(isinstance(value, (int, float)) for value in sublist)]
+        insert_data_to_database(numeric_data)
 
+        # Clear the list after sending data to the database
         list_akhir.clear()
 
 # Create an MQTT client instance
