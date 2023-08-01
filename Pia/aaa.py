@@ -1,7 +1,7 @@
 import csv
 import paho.mqtt.client as mqtt
 import os
-import ssl
+import mysql.connector
 if os.path.exists('./PIA/mqtt_logs_android.csv'):
     os.remove('./PIA/mqtt_logs_android.csv')
 
@@ -9,6 +9,29 @@ mqtt_port=19716
 ininambah=0
 
 list_akhir=[]
+
+def insert_data_to_database(data):
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',   # MySQL host address
+            user='root',        # MySQL username
+            password='',        # MySQL password
+            database='flightestdb'  # Replace with the name of the database you created in PHPMyAdmin
+        )
+        cursor = connection.cursor()
+
+        # Adjust the INSERT query according to the table structure in your database
+        query = "INSERT INTO android3 (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, sumbu_x, sumbu_y, sumbu_z, latitude, longitude) " \
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+
+        cursor.executemany(query, data)
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+    except Exception as e:
+        print(f"Error while saving data to the database: {e}")
+
 # Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
     global ininambah
@@ -29,7 +52,10 @@ def on_message(client, userdata, message):
             with open('./PIA/mqtt_logs_android.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(list_akhir[i])
- 
+
+        # Send the successfully received data to the MySQL database (PHPMyAdmin)
+        insert_data_to_database(list_akhir)
+
         list_akhir.clear()
         
 # Create an MQTT client instance
