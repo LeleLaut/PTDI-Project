@@ -18,7 +18,7 @@ def insert_data_to_database(data):
             host='localhost',  # MySQL host address
             user='root',       # MySQL username
             password='',       # MySQL password
-            database='flightestdb'  # Replace with the name of the database you created in PHPMyAdmin
+            database='flightestdb' 
         )
         cursor = connection.cursor()
 
