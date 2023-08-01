@@ -5,7 +5,7 @@ import ssl
 if os.path.exists('./KAZ/mqtt_logs_andro.csv'):
     os.remove('./KAZ/mqtt_logs_andro.csv')
 
-mqtt_port=14731
+mqtt_port=19716
 ininambah=0
 
 list_akhir=[]
@@ -16,18 +16,22 @@ def on_message(client, userdata, message):
     payload = message.payload.decode('utf-8')
     payload2=payload.strip('[]')
     new_payload=payload2.replace('"','')
-    list_akhir = [float(item) for item in new_payload.split(',')]
-    print(list_akhir)
-    
+    # list_akhir = [float(item) for item in new_payload.split(',')]
+    list_akhir=eval(payload)
+
     # You can process or filter the data here before saving it to the CSV file
     # For simplicity, we'll save the topic and payload as-is
-    if len(list_akhir) == 12:
-        list_akhir.append(ininambah)
-        with open('./KAZ/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(list_akhir)
+    if len(list_akhir) == 5:
+        # list_akhir.append(ininambah)
+        for i, sublist in enumerate(list_akhir):
+            list_akhir[i].append(ininambah)
+            ininambah+=1
+            with open('./KAZ/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
+                csv_writer = csv.writer(csvfile)
+                csv_writer.writerow(list_akhir[i])
+ 
         list_akhir.clear()
-        ininambah+=1
+        
 # Create an MQTT client instance
 client = mqtt.Client()
 
