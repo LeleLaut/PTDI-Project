@@ -2,8 +2,8 @@ import csv
 import paho.mqtt.client as mqtt
 import os
 import ssl
-if os.path.exists('./KAZ/mqtt_logs_android.csv'):
-    os.remove('./KAZ/mqtt_logs_android.csv')
+if os.path.exists('./PIA/mqtt_logs_android.csv'):
+    os.remove('./PIA/mqtt_logs_android.csv')
 
 mqtt_port=19716
 ininambah=0
@@ -26,7 +26,7 @@ def on_message(client, userdata, message):
         for i, sublist in enumerate(list_akhir):
             list_akhir[i].append(ininambah)
             ininambah+=1
-            with open('./KAZ/mqtt_logs_android.csv', 'a', newline='') as csvfile:
+            with open('./PIA/mqtt_logs_android.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(list_akhir[i])
  
@@ -43,9 +43,7 @@ client.on_message = on_message
 client.connect('0.tcp.ap.ngrok.io', mqtt_port, 60)
 
 # Subscribe to the desired MQTT topic
-client.subscribe([('android',2),
-                  
-                  ])
+client.subscribe([('android',2),])
 
 # Start the MQTT network loop to process incoming messages
 client.loop_start()

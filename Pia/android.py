@@ -1,10 +1,11 @@
 import csv
 import paho.mqtt.client as mqtt
 import os
+import ssl
 import mysql.connector
 
-if os.path.exists('./KAZ/mqtt_logs_andro.csv'):
-    os.remove('./KAZ/mqtt_logs_andro.csv')
+if os.path.exists('./PIA/mqtt_logs_android.csv'):
+    os.remove('./PIA/mqtt_logs_android.csv')
 
 mqtt_port = 19716
 ininambah = 0
@@ -23,8 +24,8 @@ def insert_data_to_database(data):
         cursor = connection.cursor()
 
         # Adjust the INSERT query according to the table structure in your database
-        query = "INSERT INTO android3 (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, sumbu_x, sumbu_y, sumbu_z, latitude, longitude) " \
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO android3 (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, sumbu_x, sumbu_y, sumbu_z, latitude, longitude, ininambah) " \
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
         # Convert data to float with precision 2
         data_float = [[round(float(value), 2) for value in sublist] for sublist in data]
@@ -37,33 +38,30 @@ def insert_data_to_database(data):
     except Exception as e:
         print(f"Error while saving data to the database: {e}")
 
-# Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
     global ininambah, list_akhir
     topic = message.topic
     payload = message.payload.decode('utf-8')
-    payload2 = payload.strip('[]')
-    new_payload = payload2.replace('"', '')
-    # list_akhir = [float(item) for item in new_payload.split(',')]
-    list_akhir = eval(payload)
+    
+    try:
+        data = eval(payload)  # Convert the payload to a Python list
+        if len(data) == 11 and all(isinstance(value, (int, float)) for value in data):
+            data = [float(value) for value in data]  # Convert elements to float
+            data.append(ininambah)
+            ininambah += 1
+            with open('./PIA/mqtt_logs_android.csv', 'a', newline='') as csvfile:
+                csv_writer = csv.writer(csvfile)
+                csv_writer.writerow(data)
+            insert_data_to_database([data])  # Send the data to the database as a list of lists
 
-    if len(list_akhir) == 5:
-        for i, sublist in enumerate(list_akhir):
-            # Check if all elements in sublist are numbers
-            if all(isinstance(value, (int, float)) for value in sublist):
-                list_akhir[i].append(ininambah)
-                ininambah += 1
-                with open('./KAZ/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
-                    csv_writer = csv.writer(csvfile)
-                    csv_writer.writerow(list_akhir[i])
-                
-        # Send the successfully received data to the MySQL database (PHPMyAdmin)
-        # Filter data to only include numeric values before sending to the database
-        numeric_data = [sublist for sublist in list_akhir if all(isinstance(value, (int, float)) for value in sublist)]
-        insert_data_to_database(numeric_data)
+            # Log pesan masuk dan data ditulis ke file CSV
+            print(f"Received MQTT message: {data}")
+            print("Data written to CSV file.")
+        else:
+            print("Received MQTT message does not meet the condition for writing to CSV.")
 
-        # Clear the list after sending data to the database
-        list_akhir.clear()
+    except Exception as e:
+        print(f"Error while processing message: {e}")
 
 # Create an MQTT client instance
 client = mqtt.Client()
@@ -75,7 +73,7 @@ client.on_message = on_message
 client.connect('0.tcp.ap.ngrok.io', mqtt_port, 60)
 
 # Subscribe to the desired MQTT topic
-client.subscribe([('android', 2)])
+client.subscribe('android')
 
 # Start the MQTT network loop to process incoming messages
 client.loop_start()
