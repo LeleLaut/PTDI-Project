@@ -5,6 +5,15 @@
 #include <Adafruit_MPU6050.h>
 #include <SPI.h>
 #include <SD.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_HMC5883_U.h>
+
+#define I2C_SDA_PIN D2  // GY-273 SDA pin (D2 on NodeMCU, GPIO4 on Wemos D1 Mini)
+#define I2C_SCL_PIN D1  // GY-273 SCL pin (D1 on NodeMCU, GPIO5 on Wemos D1 Mini)
+
+Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
+float yaw_offset = 0.0;  // Variabel untuk menyimpan nilai referensi yaw
+float angle_yaw;
 
 const unsigned long interval1 = 1000;
 const unsigned long interval2 = 200;
@@ -39,20 +48,16 @@ const float R_measure = 0.03;  // Variance dari ketidakpastian pengukuran
 // State Kalman Filter untuk setiap sumbu
 float angle_pitch = 0;  // Sudut hasil estimasi Pitch
 float angle_roll = 0;   // Sudut hasil estimasi Roll
-float angle_yaw = 0;    // Sudut hasil estimasi Yaw
 
 float bias_pitch = 0;  // Bias hasil estimasi Pitch
 float bias_roll = 0;   // Bias hasil estimasi Roll
-float bias_yaw = 0;    // Bias hasil estimasi Yaw
 
 float rate_pitch = 0;  // Derivatif sudut dari sensor Pitch
 float rate_roll = 0;   // Derivatif sudut dari sensor Roll
-float rate_yaw = 0;    // Derivatif sudut dari sensor Yaw
 
 // Posisi Covariance untuk setiap sumbu
 float P_pitch[2][2] = { { 0, 0 }, { 0, 0 } };
 float P_roll[2][2] = { { 0, 0 }, { 0, 0 } };
-float P_yaw[2][2] = { { 0, 0 }, { 0, 0 } };
 
 float gyroX_5s[5] = { 0, 0, 0, 0, 0 };
 float gyroY_5s[5] = { 0, 0, 0, 0, 0 };
@@ -77,10 +82,10 @@ struct MyData {
 MyData data;
 
 // Update these with values suitable for your network.
-const char *ssid = "Kazarach IP";
-const char *password = "modalcok";
-const char *mqtt_server = "172.20.10.4";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 1883; // 19716
+const char* ssid = "Demonxs";
+const char* password = "pabijij0";
+const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
+const int mqtt_port = 19716;                    // 19716
 
 
 WiFiClient espClient;
@@ -115,7 +120,7 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
-void callback(char *topic, byte *payload, unsigned int length) {
+void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
@@ -190,16 +195,17 @@ void degree() {
   int16_t ax, ay, az, gx, gy, gz;
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
 
+  sensors_event_t event;
+  mag.getEvent(&event);
+
   // Konversi data gyro menjadi derajat per detik
   float gyroRate_pitch = (float)gx / 131.0;  // 131 LSB per deg/s
   float gyroRate_roll = (float)gy / 131.0;   // 131 LSB per deg/s
-  float gyroRate_yaw = (float)gz / 131.0;    // 131 LSB per deg/s
 
   // Prediksi sudut berdasarkan rate gyro untuk setiap sumbu
   float dt = 0.01;  // Interval waktu (waktu sampling) dalam detik
   angle_pitch += dt * (gyroRate_pitch - bias_pitch);
   angle_roll += dt * (gyroRate_roll - bias_roll);
-  angle_yaw += dt * (gyroRate_yaw - bias_yaw);
 
   // Update Covariance Matrix (P) untuk setiap sumbu
   P_pitch[0][0] += dt * (dt * P_pitch[1][1] - P_pitch[0][1] - P_pitch[1][0] + Q_angle);
@@ -212,11 +218,6 @@ void degree() {
   P_roll[1][0] -= dt * P_roll[1][1];
   P_roll[1][1] += Q_bias * dt;
 
-  P_yaw[0][0] += dt * (dt * P_yaw[1][1] - P_yaw[0][1] - P_yaw[1][0] + Q_angle);
-  P_yaw[0][1] -= dt * P_yaw[1][1];
-  P_yaw[1][0] -= dt * P_yaw[1][1];
-  P_yaw[1][1] += Q_bias * dt;
-
   // Kalman Gain untuk setiap sumbu
   float K_pitch[2];
   K_pitch[0] = P_pitch[0][0] / (P_pitch[0][0] + R_measure);
@@ -225,10 +226,6 @@ void degree() {
   float K_roll[2];
   K_roll[0] = P_roll[0][0] / (P_roll[0][0] + R_measure);
   K_roll[1] = P_roll[1][0] / (P_roll[0][0] + R_measure);
-
-  float K_yaw[2];
-  K_yaw[0] = P_yaw[0][0] / (P_yaw[0][0] + R_measure);
-  K_yaw[1] = P_yaw[1][0] / (P_yaw[0][0] + R_measure);
 
   // Update sudut berdasarkan pengukuran (accelerometer) untuk setiap sumbu
   float accAngle_pitch = atan2(ay, az) * RAD_TO_DEG;  // Menggunakan atan2 untuk mendapatkan sudut dari accelerometer
@@ -240,11 +237,6 @@ void degree() {
   float error_roll = accAngle_roll - angle_roll;
   angle_roll += K_roll[0] * error_roll;
   bias_roll += K_roll[1] * error_roll;
-
-  float accAngle_yaw = atan2(ay, ax) * RAD_TO_DEG;
-  float error_yaw = accAngle_yaw - angle_yaw;
-  angle_yaw += K_yaw[0] * error_yaw;
-  bias_yaw += K_yaw[1] * error_yaw;
 
   // Update Covariance Matrix (P) untuk setiap sumbu
   float P00_temp_pitch = P_pitch[0][0];
@@ -263,13 +255,21 @@ void degree() {
   P_roll[1][0] -= K_roll[1] * P00_temp_roll;
   P_roll[1][1] -= K_roll[1] * P01_temp_roll;
 
-  float P00_temp_yaw = P_yaw[0][0];
-  float P01_temp_yaw = P_yaw[0][1];
+  float heading = atan2(event.magnetic.y, event.magnetic.x);
+  if (heading < 0) heading += 2 * PI;
 
-  P_yaw[0][0] -= K_yaw[0] * P00_temp_yaw;
-  P_yaw[0][1] -= K_yaw[0] * P01_temp_yaw;
-  P_yaw[1][0] -= K_yaw[1] * P00_temp_yaw;
-  P_yaw[1][1] -= K_yaw[1] * P01_temp_yaw;
+  float heading_deg = heading * 180 / PI;
+  angle_yaw = heading_deg - yaw_offset; // Menggunakan nilai referensi yaw
+
+  // Normalisasi yaw ke dalam range 0 - 360 derajat
+  if (angle_yaw < 0) {
+    angle_yaw += 360;
+  }
+
+  Serial.print("Yaw: ");
+  Serial.print(angle_yaw);
+  Serial.println(" degrees");
+
 }
 
 void publish() {
@@ -510,6 +510,25 @@ void saving_data() {
   }
 }
 
+void calibrateYaw() {
+  float sum_yaw = 0;
+  int num_samples = 100;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
+
+  // Mengambil beberapa sampel yaw dan menghitung rata-rata
+  for (int i = 0; i < num_samples; i++) {
+    sensors_event_t event;
+    mag.getEvent(&event);
+    float heading = atan2(event.magnetic.y, event.magnetic.x);
+    if (heading < 0) heading += 2 * PI;
+    float heading_deg = heading * 180 / PI;
+    sum_yaw += heading_deg;
+    delay(10);  // Jeda 10 ms antara sampel
+  }
+
+  // Menghitung nilai rata-rata yaw sebagai referensi
+  yaw_offset = sum_yaw / num_samples;
+}
+
 void setup() {
   Serial.begin(115200);
   setup_wifi();
@@ -520,8 +539,17 @@ void setup() {
   }
   Serial.println("Kartu microSD terdeteksi!");
   SD.remove("data.txt");
-  Wire.begin();
+  Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
   mpu.initialize();
+  if (!mag.begin()) {
+    Serial.println("Could not find a valid HMC5883L sensor, check wiring!");
+    return;
+  }
+
+  Serial.println("HMC5883L sensor detected");
+
+  // Menjalankan kalibrasi yaw saat program pertama kali dijalankan
+  calibrateYaw();
   adampu.begin();
   // Atur nilai awal state dan P untuk setiap sumbu
   angle_pitch = 0;
@@ -537,13 +565,6 @@ void setup() {
   P_roll[0][1] = 0;
   P_roll[1][0] = 0;
   P_roll[1][1] = 0;
-
-  angle_yaw = 0;
-  bias_yaw = 0;
-  P_yaw[0][0] = 0;
-  P_yaw[0][1] = 0;
-  P_yaw[1][0] = 0;
-  P_yaw[1][1] = 0;
 }
 
 
