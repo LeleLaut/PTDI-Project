@@ -4,7 +4,7 @@ import os
 import mysql.connector
 
 mqtt_broker = '0.tcp.ap.ngrok.io'
-mqtt_port = 10208
+mqtt_port = 19716
 csv_file_path = './PIA/mqtt_logs_arduino.csv'
 subscribed_data = []
 
