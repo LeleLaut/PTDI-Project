@@ -39,20 +39,16 @@ const float R_measure = 0.03;  // Variance dari ketidakpastian pengukuran
 // State Kalman Filter untuk setiap sumbu
 float angle_pitch = 0;  // Sudut hasil estimasi Pitch
 float angle_roll = 0;   // Sudut hasil estimasi Roll
-float angle_yaw = 0;    // Sudut hasil estimasi Yaw
 
 float bias_pitch = 0;  // Bias hasil estimasi Pitch
 float bias_roll = 0;   // Bias hasil estimasi Roll
-float bias_yaw = 0;    // Bias hasil estimasi Yaw
 
 float rate_pitch = 0;  // Derivatif sudut dari sensor Pitch
 float rate_roll = 0;   // Derivatif sudut dari sensor Roll
-float rate_yaw = 0;    // Derivatif sudut dari sensor Yaw
 
 // Posisi Covariance untuk setiap sumbu
 float P_pitch[2][2] = { { 0, 0 }, { 0, 0 } };
 float P_roll[2][2] = { { 0, 0 }, { 0, 0 } };
-float P_yaw[2][2] = { { 0, 0 }, { 0, 0 } };
 
 float gyroX_5s[5] = { 0, 0, 0, 0, 0 };
 float gyroY_5s[5] = { 0, 0, 0, 0, 0 };
@@ -77,10 +73,10 @@ struct MyData {
 MyData data;
 
 // Update these with values suitable for your network.
-const char *ssid = "Kazarach IP";
-const char *password = "modalcok";
-const char *mqtt_server = "172.20.10.4";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 1883; // 19716
+const char* ssid = "Demonxs";
+const char* password = "pabijij0";
+const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
+const int mqtt_port = 19716;                    // 19716
 
 
 WiFiClient espClient;
@@ -115,7 +111,7 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
-void callback(char *topic, byte *payload, unsigned int length) {
+void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
@@ -187,35 +183,28 @@ void accelerometer() {
 
 void degree() {
   // Baca data dari MPU6050
-  int16_t ax, ay, az, gx, gy, gz;
+   int16_t ax, ay, az, gx, gy, gz;
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
 
   // Konversi data gyro menjadi derajat per detik
-  float gyroRate_pitch = (float)gx / 131.0;  // 131 LSB per deg/s
-  float gyroRate_roll = (float)gy / 131.0;   // 131 LSB per deg/s
-  float gyroRate_yaw = (float)gz / 131.0;    // 131 LSB per deg/s
+  float gyroRate_pitch = (float)gx / 131.0; // 131 LSB per deg/s
+  float gyroRate_roll = (float)gy / 131.0;  // 131 LSB per deg/s
 
   // Prediksi sudut berdasarkan rate gyro untuk setiap sumbu
-  float dt = 0.01;  // Interval waktu (waktu sampling) dalam detik
+  float dt = 0.01; // Interval waktu (waktu sampling) dalam detik
   angle_pitch += dt * (gyroRate_pitch - bias_pitch);
   angle_roll += dt * (gyroRate_roll - bias_roll);
-  angle_yaw += dt * (gyroRate_yaw - bias_yaw);
 
   // Update Covariance Matrix (P) untuk setiap sumbu
-  P_pitch[0][0] += dt * (dt * P_pitch[1][1] - P_pitch[0][1] - P_pitch[1][0] + Q_angle);
+  P_pitch[0][0] += dt * (dt*P_pitch[1][1] - P_pitch[0][1] - P_pitch[1][0] + Q_angle);
   P_pitch[0][1] -= dt * P_pitch[1][1];
   P_pitch[1][0] -= dt * P_pitch[1][1];
   P_pitch[1][1] += Q_bias * dt;
 
-  P_roll[0][0] += dt * (dt * P_roll[1][1] - P_roll[0][1] - P_roll[1][0] + Q_angle);
+  P_roll[0][0] += dt * (dt*P_roll[1][1] - P_roll[0][1] - P_roll[1][0] + Q_angle);
   P_roll[0][1] -= dt * P_roll[1][1];
   P_roll[1][0] -= dt * P_roll[1][1];
   P_roll[1][1] += Q_bias * dt;
-
-  P_yaw[0][0] += dt * (dt * P_yaw[1][1] - P_yaw[0][1] - P_yaw[1][0] + Q_angle);
-  P_yaw[0][1] -= dt * P_yaw[1][1];
-  P_yaw[1][0] -= dt * P_yaw[1][1];
-  P_yaw[1][1] += Q_bias * dt;
 
   // Kalman Gain untuk setiap sumbu
   float K_pitch[2];
@@ -226,12 +215,8 @@ void degree() {
   K_roll[0] = P_roll[0][0] / (P_roll[0][0] + R_measure);
   K_roll[1] = P_roll[1][0] / (P_roll[0][0] + R_measure);
 
-  float K_yaw[2];
-  K_yaw[0] = P_yaw[0][0] / (P_yaw[0][0] + R_measure);
-  K_yaw[1] = P_yaw[1][0] / (P_yaw[0][0] + R_measure);
-
   // Update sudut berdasarkan pengukuran (accelerometer) untuk setiap sumbu
-  float accAngle_pitch = atan2(ay, az) * RAD_TO_DEG;  // Menggunakan atan2 untuk mendapatkan sudut dari accelerometer
+  float accAngle_pitch = atan2(ay, az) * RAD_TO_DEG; // Menggunakan atan2 untuk mendapatkan sudut dari accelerometer
   float error_pitch = accAngle_pitch - angle_pitch;
   angle_pitch += K_pitch[0] * error_pitch;
   bias_pitch += K_pitch[1] * error_pitch;
@@ -240,11 +225,6 @@ void degree() {
   float error_roll = accAngle_roll - angle_roll;
   angle_roll += K_roll[0] * error_roll;
   bias_roll += K_roll[1] * error_roll;
-
-  float accAngle_yaw = atan2(ay, ax) * RAD_TO_DEG;
-  float error_yaw = accAngle_yaw - angle_yaw;
-  angle_yaw += K_yaw[0] * error_yaw;
-  bias_yaw += K_yaw[1] * error_yaw;
 
   // Update Covariance Matrix (P) untuk setiap sumbu
   float P00_temp_pitch = P_pitch[0][0];
@@ -262,14 +242,6 @@ void degree() {
   P_roll[0][1] -= K_roll[0] * P01_temp_roll;
   P_roll[1][0] -= K_roll[1] * P00_temp_roll;
   P_roll[1][1] -= K_roll[1] * P01_temp_roll;
-
-  float P00_temp_yaw = P_yaw[0][0];
-  float P01_temp_yaw = P_yaw[0][1];
-
-  P_yaw[0][0] -= K_yaw[0] * P00_temp_yaw;
-  P_yaw[0][1] -= K_yaw[0] * P01_temp_yaw;
-  P_yaw[1][0] -= K_yaw[1] * P00_temp_yaw;
-  P_yaw[1][1] -= K_yaw[1] * P01_temp_yaw;
 }
 
 void publish() {
@@ -537,13 +509,6 @@ void setup() {
   P_roll[0][1] = 0;
   P_roll[1][0] = 0;
   P_roll[1][1] = 0;
-
-  angle_yaw = 0;
-  bias_yaw = 0;
-  P_yaw[0][0] = 0;
-  P_yaw[0][1] = 0;
-  P_yaw[1][0] = 0;
-  P_yaw[1][1] = 0;
 }
 
 
