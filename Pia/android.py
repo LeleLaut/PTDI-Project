@@ -6,7 +6,7 @@ import mysql.connector
 if os.path.exists('./PIA/mqtt_logs_android.csv'):
     os.remove('./PIA/mqtt_logs_android.csv')
 
-mqtt_port = 19716
+mqtt_port = 10153
 ininambah = 0
 
 list_akhir = []

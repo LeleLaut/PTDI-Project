@@ -1,4 +1,10 @@
 import socket
+import json
+import csv 
+import os
+
+if os.path.exists('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv'):
+    os.remove('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv')
 
 client_ip = ''  # Bind to all available network interfaces for receiving broadcast messages
 client_port = 50000  # Replace with the desired port number
@@ -16,4 +22,7 @@ print("Listening for broadcast messages...")
 while True:
     # Receive data from the server
     data, server_address = client_socket.recvfrom(1024)
-    print(f"Received message from {server_address}: {data.decode('utf-8')}")
+    received_list=json.loads(data.decode('utf-8'))
+    with open('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(received_list)
