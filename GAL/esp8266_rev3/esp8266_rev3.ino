@@ -84,8 +84,8 @@ MyData data;
 // Update these with values suitable for your network.
 const char* ssid = "Demonxs";
 const char* password = "pabijij0";
-const char* mqtt_server = "172.20.10.4";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 1883;                    // 19716
+const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
+const int mqtt_port = 10153;                    // 19716
 
 
 WiFiClient espClient;
@@ -440,7 +440,7 @@ void monitoring() {
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll, angle_yaw);
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw);
     dataFile.close();
   }
 
@@ -453,7 +453,7 @@ void saving_data() {
   accZ_5s[pencacahArray] = accZ;
 
   pitch_5s[pencacahArray] = angle_pitch;
-  roll_5s[pencacahArray] = angle_roll;
+  roll_5s[pencacahArray] = angle_roll * -1;
   yaw_5s[pencacahArray] = angle_yaw;
 
   // for (int i = 0; i < 5; i++) {
@@ -511,7 +511,7 @@ void saving_data() {
 
 void calibrateYaw() {
   float sum_yaw = 0;
-  int num_samples = 100;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
+  int num_samples = 500;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
 
   // Mengambil beberapa sampel yaw dan menghitung rata-rata
   for (int i = 0; i < num_samples; i++) {
@@ -532,20 +532,9 @@ void setup() {
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, mqtt_port);
-  if (!SD.begin(chipSelect)) {
-    Serial.println("Kartu microSD tidak terdeteksi!");
-    return;
-  }
-  Serial.println("Kartu microSD terdeteksi!");
   SD.remove("data.txt");
   Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
   mpu.initialize();
-  if (!mag.begin()) {
-    Serial.println("Could not find a valid HMC5883L sensor, check wiring!");
-    return;
-  }
-
-  Serial.println("HMC5883L sensor detected");
 
   // Menjalankan kalibrasi yaw saat program pertama kali dijalankan
   calibrateYaw();
