@@ -84,8 +84,8 @@ MyData data;
 // Update these with values suitable for your network.
 const char* ssid = "Demonxs";
 const char* password = "pabijij0";
-const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 19716;                    // 19716
+const char* mqtt_server = "172.20.10.4";  // test.mosquitto.org 0.tcp.ap.ngrok.io
+const int mqtt_port = 1883;                    // 19716
 
 
 WiFiClient espClient;
