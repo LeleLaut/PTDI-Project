@@ -2,11 +2,27 @@ import csv
 import paho.mqtt.client as mqtt
 import os
 import ast
+import socket
+import pickle
+import time
+import json
 
-if os.path.exists('./KAZ/mqtt_logs_ardu.csv'):
-    os.remove('./KAZ/mqtt_logs_ardu.csv')
+# Create a UDP socket
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-mqtt_port=19716
+# Bind the socket to a specific IP address and port
+server_ip = '192.168.168.191'  # Bind to all available network interfaces
+server_port = 50000  # Replace with the desired port number
+server_socket.bind((server_ip, server_port))
+
+# Get the broadcast address
+broadcast_address = '192.168.168.255'
+
+if os.path.exists('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv'):
+    os.remove('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv')
+
+mqtt_port=10153
 ininambah=0
 
 subscribed_data = []
@@ -29,12 +45,17 @@ def on_message(client, userdata, message):
                 result_lists[j].append(processed_data[i][j])
 
         if len(subscribed_data) == 9:
-            with open('./KAZ/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
+            with open('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 for result_list in result_lists:
                     result_list.append(ininambah)
                     ininambah+=1
                     csv_writer.writerow(result_list)
+                    serialized_data = json.dumps(result_list)
+
+                    # Broadcast the serialized data to the client
+                    server_socket.sendto(serialized_data.encode('utf-8'), (broadcast_address, server_port))
+                    print(f"Broadcasted: {result_list}")
 
             subscribed_data.clear()
         
