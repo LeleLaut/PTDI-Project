@@ -16,7 +16,7 @@ float yaw_offset = 0.0;  // Variabel untuk menyimpan nilai referensi yaw
 float angle_yaw;
 
 const unsigned long interval1 = 1000;
-const unsigned long interval2 = 200;
+const unsigned long interval2 = 100;
 const unsigned long interval3 = 5000;
 
 unsigned long previousMillis1 = 0;  // Menyimpan waktu terakhir delay 1
@@ -41,9 +41,9 @@ float accX, accY, accZ;
 MPU6050 mpu;
 
 // Konstanta Kalman Filter
-const float Q_angle = 0.001;   // Variance dari estimasi ketidakpastian sensor
-const float Q_bias = 0.003;    // Variance dari estimasi ketidakpastian bias
-const float R_measure = 0.03;  // Variance dari ketidakpastian pengukuran
+const float Q_angle = 0.1;   // Variance dari estimasi ketidakpastian sensor
+const float Q_bias = 0.1;    // Variance dari estimasi ketidakpastian bias
+const float R_measure = 0.1;  // Variance dari ketidakpastian pengukuran
 
 // State Kalman Filter untuk setiap sumbu
 float angle_pitch = 0;  // Sudut hasil estimasi Pitch
@@ -259,7 +259,7 @@ void degree() {
   if (heading < 0) heading += 2 * PI;
 
   float heading_deg = heading * 180 / PI;
-  angle_yaw = heading_deg - yaw_offset; // Menggunakan nilai referensi yaw
+  angle_yaw = heading_deg - yaw_offset;  // Menggunakan nilai referensi yaw
 
   // Normalisasi yaw ke dalam range 0 - 360 derajat
   if (angle_yaw < 0) {
@@ -269,7 +269,6 @@ void degree() {
   Serial.print("Yaw: ");
   Serial.print(angle_yaw);
   Serial.println(" degrees");
-
 }
 
 void publish() {
@@ -457,51 +456,51 @@ void saving_data() {
   roll_5s[pencacahArray] = angle_roll;
   yaw_5s[pencacahArray] = angle_yaw;
 
-  for (int i = 0; i < 5; i++) {
-    Serial.print(gyroX_5s[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-  for (int i = 0; i < 5; i++) {
-    Serial.print(gyroY_5s[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-  for (int i = 0; i < 5; i++) {
-    Serial.print(gyroZ_5s[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-  for (int i = 0; i < 5; i++) {
-    Serial.print(accX_5s[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-  for (int i = 0; i < 5; i++) {
-    Serial.print(accY_5s[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-  for (int i = 0; i < 5; i++) {
-    Serial.print(accZ_5s[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-  for (int i = 0; i < 5; i++) {
-    Serial.print(pitch_5s[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-  for (int i = 0; i < 5; i++) {
-    Serial.print(roll_5s[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-  for (int i = 0; i < 5; i++) {
-    Serial.print(yaw_5s[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
+  // for (int i = 0; i < 5; i++) {
+  //   Serial.print(gyroX_5s[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println();
+  // for (int i = 0; i < 5; i++) {
+  //   Serial.print(gyroY_5s[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println();
+  // for (int i = 0; i < 5; i++) {
+  //   Serial.print(gyroZ_5s[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println();
+  // for (int i = 0; i < 5; i++) {
+  //   Serial.print(accX_5s[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println();
+  // for (int i = 0; i < 5; i++) {
+  //   Serial.print(accY_5s[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println();
+  // for (int i = 0; i < 5; i++) {
+  //   Serial.print(accZ_5s[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println();
+  // for (int i = 0; i < 5; i++) {
+  //   Serial.print(pitch_5s[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println();
+  // for (int i = 0; i < 5; i++) {
+  //   Serial.print(roll_5s[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println();
+  // for (int i = 0; i < 5; i++) {
+  //   Serial.print(yaw_5s[i]);
+  //   Serial.print(", ");
+  // }
+  // Serial.println();
 
   pencacahArray += 1;
   Serial.println(pencacahArray);
@@ -589,10 +588,11 @@ void loop() {
     accelerometer();
     degree();
     saving_data();
+    monitoring();
   }
   if (currentMillis - previousMillis3 >= interval3) {
     previousMillis3 = currentMillis;  // Menyimpan waktu terakhir delay 3
-    monitoring();
+
     publish();
   }
 }
