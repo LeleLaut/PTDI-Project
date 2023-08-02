@@ -35,26 +35,31 @@ def insert_data_to_database(data):
 # Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
     global ininambah
+    global list_akhir
     topic = message.topic
     payload = message.payload.decode('utf-8')
-    payload2=payload.strip('[]')
-    new_payload=payload2.replace('"','')
-    # list_akhir = [float(item) for item in new_payload.split(',')]
-    list_akhir=eval(payload)
+    payload_values = payload.strip('[]').split(',')
+    
+    # Remove double quotes from each item in the payload
+    payload_values = [item.replace('"', '') for item in payload_values]
+
+    # Convert payload_values to float
+    list_akhir = [float(item) for item in payload_values]
 
     # You can process or filter the data here before saving it to the CSV file
     # For simplicity, we'll save the topic and payload as-is
     if len(list_akhir) == 5:
-        # list_akhir.append(ininambah)
-        for i, sublist in enumerate(list_akhir):
-            list_akhir[i].append(ininambah)
-            ininambah+=1
-            with open('./PIA/mqtt_logs_android.csv', 'a', newline='') as csvfile:
-                csv_writer = csv.writer(csvfile)
-                csv_writer.writerow(list_akhir[i])
+        list_akhir.append(ininambah)
+        ininambah += 1
+        with open('./PIA/mqtt_logs_android.csv', 'a', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerow(list_akhir)
+
+        # Convert the sublist to a tuple before inserting into the database
+        data_to_insert = tuple(list_akhir)
 
         # Send the successfully received data to the MySQL database (PHPMyAdmin)
-        insert_data_to_database(list_akhir)
+        insert_data_to_database([data_to_insert])
 
         list_akhir.clear()
         
