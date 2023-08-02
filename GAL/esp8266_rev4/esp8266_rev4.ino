@@ -8,8 +8,8 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_HMC5883_U.h>
 
-#define I2C_SDA_PIN D2  
-#define I2C_SCL_PIN D1  
+#define I2C_SDA_PIN D2
+#define I2C_SCL_PIN D1
 
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
 float yaw_offset = 0.0;  // Variabel untuk menyimpan nilai referensi yaw
@@ -268,9 +268,9 @@ void degree() {
     angle_yaw += 360;
   }
 
-  Serial.print("Yaw: ");
-  Serial.print(angle_yaw);
-  Serial.println(" degrees");
+  // Serial.print("Yaw: ");
+  // Serial.print(angle_yaw);
+  // Serial.println(" degrees");
 }
 
 void publish() {
@@ -439,6 +439,7 @@ void monitoring() {
   Serial.print(" | Y : ");
   Serial.println(angle_yaw);
 }
+
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
@@ -505,7 +506,7 @@ void saving_data() {
   // Serial.println();
 
   pencacahArray += 1;
-  Serial.println(pencacahArray);
+  // Serial.println(pencacahArray);
   if (pencacahArray == 5) {
     pencacahArray = 0;
   }
@@ -513,7 +514,7 @@ void saving_data() {
 
 void calibrateYaw() {
   float sum_yaw = 0;
-  int num_samples = 100;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
+  int num_samples = 200;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
 
   // Mengambil beberapa sampel yaw dan menghitung rata-rata
   for (int i = 0; i < num_samples; i++) {
@@ -523,7 +524,7 @@ void calibrateYaw() {
     if (heading < 0) heading += 2 * PI;
     float heading_deg = heading * 180 / PI;
     sum_yaw += heading_deg;
-    delay(10);  // Jeda 10 ms antara sampel
+    delay(5);  // Jeda 5 ms antara sampel
   }
 
   // Menghitung nilai rata-rata yaw sebagai referensi
@@ -580,6 +581,7 @@ void loop() {
       reconnect();
     }
     client.loop();
+    monitoring();
   }
 
   // thread 2
@@ -598,8 +600,7 @@ void loop() {
 
   // thread 4
   if (currentMillis - previousMillis4 >= interval4) {
-    previousMillis3 = currentMillis;  // Menyimpan waktu terakhir delay 3
+    previousMillis4 = currentMillis;  // Menyimpan waktu terakhir delay 4
     saving_data();
-    monitoring();
   }
 }
