@@ -17,7 +17,7 @@ float yaw_offset = 0.0;  // Variabel untuk menyimpan nilai referensi yaw
 float angle_yaw;
 
 const unsigned long interval1 = 1000;
-const unsigned long interval2 = 20;
+const unsigned long interval2 = 10;
 const unsigned long interval3 = 5000;
 const unsigned long interval4 = 100;
 
@@ -171,7 +171,7 @@ void reconnect() {
 void broadcasting() {
   // const char* broadcastData = "Hello from ESP8266!";
   udp.beginPacket(IPAddress(255, 255, 255, 255), broadcastPort);
-  udp.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll, angle_yaw);
+  udp.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw);
   udp.endPacket();
 }
 
@@ -453,7 +453,7 @@ void monitoring() {
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll, angle_yaw);
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw);
     dataFile.close();
   }
 
@@ -466,7 +466,7 @@ void saving_data() {
   accZ_5s[pencacahArray] = accZ;
 
   pitch_5s[pencacahArray] = angle_pitch;
-  roll_5s[pencacahArray] = angle_roll;
+  roll_5s[pencacahArray] = angle_roll * -1;
   yaw_5s[pencacahArray] = angle_yaw;
 
   // for (int i = 0; i < 5; i++) {
