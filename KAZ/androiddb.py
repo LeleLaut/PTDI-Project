@@ -20,7 +20,7 @@ def insert_data_to_database(data):
         )
         cursor = connection.cursor()
 
-        query = "INSERT INTO android (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, sumbu_x, sumbu_y, sumbu_z, longitude, latitude, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        query = "INSERT INTO arduino1 (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" 
 
         for item in data:
             values = [float(value) for value in item[:12]]  # Mengambil hanya 9 nilai pertama
