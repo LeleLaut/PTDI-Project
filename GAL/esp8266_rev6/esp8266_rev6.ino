@@ -284,7 +284,7 @@ void degree() {
 }
 
 void publish() {
-  char str_gyroX_arr[100];
+  char str_gyroX_arr[200];
   char* arrayStr_str_gyroX_arr = str_gyroX_arr;
   arrayStr_str_gyroX_arr += sprintf(arrayStr_str_gyroX_arr, "[");
   for (int i = 0; i < n; i++) {
@@ -295,7 +295,7 @@ void publish() {
   }
   arrayStr_str_gyroX_arr += sprintf(arrayStr_str_gyroX_arr, "]");
 
-  char str_gyroY_arr[100];
+  char str_gyroY_arr[200];
   char* arrayStr_str_gyroY_arr = str_gyroY_arr;
   arrayStr_str_gyroY_arr += sprintf(arrayStr_str_gyroY_arr, "[");
   for (int i = 0; i < n; i++) {
@@ -306,7 +306,7 @@ void publish() {
   }
   arrayStr_str_gyroY_arr += sprintf(arrayStr_str_gyroY_arr, "]");
 
-  char str_gyroZ_arr[100];
+  char str_gyroZ_arr[200];
   char* arrayStr_str_gyroZ_arr = str_gyroZ_arr;
   arrayStr_str_gyroZ_arr += sprintf(arrayStr_str_gyroZ_arr, "[");
   for (int i = 0; i < n; i++) {
@@ -317,7 +317,7 @@ void publish() {
   }
   arrayStr_str_gyroZ_arr += sprintf(arrayStr_str_gyroZ_arr, "]");
 
-  char str_accX_arr[100];
+  char str_accX_arr[200];
   char* arrayStr_str_accX_arr = str_accX_arr;
   arrayStr_str_accX_arr += sprintf(arrayStr_str_accX_arr, "[");
   for (int i = 0; i < n; i++) {
@@ -328,7 +328,7 @@ void publish() {
   }
   arrayStr_str_accX_arr += sprintf(arrayStr_str_accX_arr, "]");
 
-  char str_accY_arr[100];
+  char str_accY_arr[200];
   char* arrayStr_str_accY_arr = str_accY_arr;
   arrayStr_str_accY_arr += sprintf(arrayStr_str_accY_arr, "[");
   for (int i = 0; i < n; i++) {
@@ -339,7 +339,7 @@ void publish() {
   }
   arrayStr_str_accY_arr += sprintf(arrayStr_str_accY_arr, "]");
 
-  char str_accZ_arr[100];
+  char str_accZ_arr[200];
   char* arrayStr_str_accZ_arr = str_accZ_arr;
   arrayStr_str_accZ_arr += sprintf(arrayStr_str_accZ_arr, "[");
   for (int i = 0; i < n; i++) {
@@ -350,7 +350,7 @@ void publish() {
   }
   arrayStr_str_accZ_arr += sprintf(arrayStr_str_accZ_arr, "]");
 
-  char str_pitch_arr[100];
+  char str_pitch_arr[200];
   char* arrayStr_str_pitch_arr = str_pitch_arr;
   arrayStr_str_pitch_arr += sprintf(arrayStr_str_pitch_arr, "[");
   for (int i = 0; i < n; i++) {
@@ -361,7 +361,7 @@ void publish() {
   }
   arrayStr_str_pitch_arr += sprintf(arrayStr_str_pitch_arr, "]");
 
-  char str_roll_arr[100];
+  char str_roll_arr[200];
   char* arrayStr_str_roll_arr = str_roll_arr;
   arrayStr_str_roll_arr += sprintf(arrayStr_str_roll_arr, "[");
   for (int i = 0; i < n; i++) {
@@ -372,7 +372,7 @@ void publish() {
   }
   arrayStr_str_roll_arr += sprintf(arrayStr_str_roll_arr, "]");
 
-  char str_yaw_arr[100];
+  char str_yaw_arr[200];
   char* arrayStr_str_yaw_arr = str_yaw_arr;
   arrayStr_str_yaw_arr += sprintf(arrayStr_str_yaw_arr, "[");
   for (int i = 0; i < n; i++) {
