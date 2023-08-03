@@ -4,8 +4,8 @@ import os
 import json
 import mysql.connector
 
-if os.path.exists('./KAZ/SERVER LOCAL/mqtt_logs_android.csv'):
-    os.remove('./KAZ/SERVER LOCAL/mqtt_logs_android.csv')
+if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_android.csv'):
+    os.remove('./KAZ/SERVERLOCAL/mqtt_logs_android.csv')
 
 mqtt_port = 10153
 ininambah = 0

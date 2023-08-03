@@ -4,8 +4,8 @@ import csv
 import os
 import mysql.connector
 
-if os.path.exists('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv'):
-    os.remove('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv')
+if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_ardu.csv'):
+    os.remove('./KAZ/SERVERLOCAL/mqtt_logs_ardu.csv')
 
 client_ip = ''  # Bind to all available network interfaces for receiving broadcast messages
 client_port = 50000  # Replace with the desired port number
