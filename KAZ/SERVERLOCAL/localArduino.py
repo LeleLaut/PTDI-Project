@@ -8,7 +8,7 @@ PORT = 51111
 
 if os.path.exists('./KAZ/SERVERLOCAL/local_logs_ardu.csv'):
     os.remove('./KAZ/SERVERLOCAL/local_logs_ardu.csv')
-
+ininambah=0
 # Create a UDP socket
 receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -33,6 +33,8 @@ while True:
         # print(float_list)
         # Process and display the received data
         # print(f"Received data from ESP8266: {decoded_data} from {esp8266_address[0]}")
+        float_list.append(ininambah)
+        ininambah+=1
         with open('./KAZ/SERVERLOCAL/local_logs_ardu.csv', 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(float_list)
