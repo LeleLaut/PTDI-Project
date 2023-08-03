@@ -16,11 +16,11 @@ Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
 float yaw_offset = 0.0;  // Variabel untuk menyimpan nilai referensi yaw
 float angle_yaw;
 
-const unsigned long interval1 = 1000;
+const unsigned long interval1 = 500;  //penentu frekuensi
 const unsigned long interval2 = 10;
 const unsigned long interval3 = 5000;
 const unsigned long interval4 = 100;
-
+const unsigned int n = interval3 / interval1;
 unsigned long previousMillis1 = 0;  // Menyimpan waktu terakhir delay 1
 unsigned long previousMillis2 = 0;  // Menyimpan waktu terakhir delay 2
 unsigned long previousMillis3 = 0;  // Menyimpan waktu terakhir delay 3
@@ -62,17 +62,17 @@ float rate_roll = 0;   // Derivatif sudut dari sensor Roll
 float P_pitch[2][2] = { { 0, 0 }, { 0, 0 } };
 float P_roll[2][2] = { { 0, 0 }, { 0, 0 } };
 
-float gyroX_5s[5] = { 0, 0, 0, 0, 0 };
-float gyroY_5s[5] = { 0, 0, 0, 0, 0 };
-float gyroZ_5s[5] = { 0, 0, 0, 0, 0 };
+float gyroX_arr[n];
+float gyroY_arr[n];
+float gyroZ_arr[n];
 
-float accX_5s[5] = { 0, 0, 0, 0, 0 };
-float accY_5s[5] = { 0, 0, 0, 0, 0 };
-float accZ_5s[5] = { 0, 0, 0, 0, 0 };
+float accX_arr[n];
+float accY_arr[n];
+float accZ_arr[n];
 
-float pitch_5s[5] = { 0, 0, 0, 0, 0 };
-float roll_5s[5] = { 0, 0, 0, 0, 0 };
-float yaw_5s[5] = { 0, 0, 0, 0, 0 };
+float pitch_arr[n];
+float roll_arr[n];
+float yaw_arr[n];
 
 int pencacahArray = 0;
 
@@ -284,131 +284,131 @@ void degree() {
 }
 
 void publish() {
-  char str_gyroX_5s[100];
-  char* arrayStr_str_gyroX_5s = str_gyroX_5s;
-  arrayStr_str_gyroX_5s += sprintf(arrayStr_str_gyroX_5s, "[");
-  for (int i = 0; i < 5; i++) {
-    arrayStr_str_gyroX_5s += sprintf(arrayStr_str_gyroX_5s, "%.2f", gyroX_5s[i]);  // Use 2 decimal places
-    if (i < 4) {
-      arrayStr_str_gyroX_5s += sprintf(arrayStr_str_gyroX_5s, ", ");
+  char str_gyroX_arr[100];
+  char* arrayStr_str_gyroX_arr = str_gyroX_arr;
+  arrayStr_str_gyroX_arr += sprintf(arrayStr_str_gyroX_arr, "[");
+  for (int i = 0; i < n; i++) {
+    arrayStr_str_gyroX_arr += sprintf(arrayStr_str_gyroX_arr, "%.2f", gyroX_arr[i]);  // Use 2 decimal places
+    if (i < n - 1) {
+      arrayStr_str_gyroX_arr += sprintf(arrayStr_str_gyroX_arr, ", ");
     }
   }
-  arrayStr_str_gyroX_5s += sprintf(arrayStr_str_gyroX_5s, "]");
+  arrayStr_str_gyroX_arr += sprintf(arrayStr_str_gyroX_arr, "]");
 
-  char str_gyroY_5s[100];
-  char* arrayStr_str_gyroY_5s = str_gyroY_5s;
-  arrayStr_str_gyroY_5s += sprintf(arrayStr_str_gyroY_5s, "[");
-  for (int i = 0; i < 5; i++) {
-    arrayStr_str_gyroY_5s += sprintf(arrayStr_str_gyroY_5s, "%.2f", gyroY_5s[i]);  // Use 2 decimal places
-    if (i < 4) {
-      arrayStr_str_gyroY_5s += sprintf(arrayStr_str_gyroY_5s, ", ");
+  char str_gyroY_arr[100];
+  char* arrayStr_str_gyroY_arr = str_gyroY_arr;
+  arrayStr_str_gyroY_arr += sprintf(arrayStr_str_gyroY_arr, "[");
+  for (int i = 0; i < n; i++) {
+    arrayStr_str_gyroY_arr += sprintf(arrayStr_str_gyroY_arr, "%.2f", gyroY_arr[i]);  // Use 2 decimal places
+    if (i < n - 1) {
+      arrayStr_str_gyroY_arr += sprintf(arrayStr_str_gyroY_arr, ", ");
     }
   }
-  arrayStr_str_gyroY_5s += sprintf(arrayStr_str_gyroY_5s, "]");
+  arrayStr_str_gyroY_arr += sprintf(arrayStr_str_gyroY_arr, "]");
 
-  char str_gyroZ_5s[100];
-  char* arrayStr_str_gyroZ_5s = str_gyroZ_5s;
-  arrayStr_str_gyroZ_5s += sprintf(arrayStr_str_gyroZ_5s, "[");
-  for (int i = 0; i < 5; i++) {
-    arrayStr_str_gyroZ_5s += sprintf(arrayStr_str_gyroZ_5s, "%.2f", gyroZ_5s[i]);  // Use 2 decimal places
-    if (i < 4) {
-      arrayStr_str_gyroZ_5s += sprintf(arrayStr_str_gyroZ_5s, ", ");
+  char str_gyroZ_arr[100];
+  char* arrayStr_str_gyroZ_arr = str_gyroZ_arr;
+  arrayStr_str_gyroZ_arr += sprintf(arrayStr_str_gyroZ_arr, "[");
+  for (int i = 0; i < n; i++) {
+    arrayStr_str_gyroZ_arr += sprintf(arrayStr_str_gyroZ_arr, "%.2f", gyroZ_arr[i]);  // Use 2 decimal places
+    if (i < n - 1) {
+      arrayStr_str_gyroZ_arr += sprintf(arrayStr_str_gyroZ_arr, ", ");
     }
   }
-  arrayStr_str_gyroZ_5s += sprintf(arrayStr_str_gyroZ_5s, "]");
+  arrayStr_str_gyroZ_arr += sprintf(arrayStr_str_gyroZ_arr, "]");
 
-  char str_accX_5s[100];
-  char* arrayStr_str_accX_5s = str_accX_5s;
-  arrayStr_str_accX_5s += sprintf(arrayStr_str_accX_5s, "[");
-  for (int i = 0; i < 5; i++) {
-    arrayStr_str_accX_5s += sprintf(arrayStr_str_accX_5s, "%.2f", accX_5s[i]);  // Use 2 decimal places
-    if (i < 4) {
-      arrayStr_str_accX_5s += sprintf(arrayStr_str_accX_5s, ", ");
+  char str_accX_arr[100];
+  char* arrayStr_str_accX_arr = str_accX_arr;
+  arrayStr_str_accX_arr += sprintf(arrayStr_str_accX_arr, "[");
+  for (int i = 0; i < n; i++) {
+    arrayStr_str_accX_arr += sprintf(arrayStr_str_accX_arr, "%.2f", accX_arr[i]);  // Use 2 decimal places
+    if (i < n - 1) {
+      arrayStr_str_accX_arr += sprintf(arrayStr_str_accX_arr, ", ");
     }
   }
-  arrayStr_str_accX_5s += sprintf(arrayStr_str_accX_5s, "]");
+  arrayStr_str_accX_arr += sprintf(arrayStr_str_accX_arr, "]");
 
-  char str_accY_5s[100];
-  char* arrayStr_str_accY_5s = str_accY_5s;
-  arrayStr_str_accY_5s += sprintf(arrayStr_str_accY_5s, "[");
-  for (int i = 0; i < 5; i++) {
-    arrayStr_str_accY_5s += sprintf(arrayStr_str_accY_5s, "%.2f", accY_5s[i]);  // Use 2 decimal places
-    if (i < 4) {
-      arrayStr_str_accY_5s += sprintf(arrayStr_str_accY_5s, ", ");
+  char str_accY_arr[100];
+  char* arrayStr_str_accY_arr = str_accY_arr;
+  arrayStr_str_accY_arr += sprintf(arrayStr_str_accY_arr, "[");
+  for (int i = 0; i < n; i++) {
+    arrayStr_str_accY_arr += sprintf(arrayStr_str_accY_arr, "%.2f", accY_arr[i]);  // Use 2 decimal places
+    if (i < n - 1) {
+      arrayStr_str_accY_arr += sprintf(arrayStr_str_accY_arr, ", ");
     }
   }
-  arrayStr_str_accY_5s += sprintf(arrayStr_str_accY_5s, "]");
+  arrayStr_str_accY_arr += sprintf(arrayStr_str_accY_arr, "]");
 
-  char str_accZ_5s[100];
-  char* arrayStr_str_accZ_5s = str_accZ_5s;
-  arrayStr_str_accZ_5s += sprintf(arrayStr_str_accZ_5s, "[");
-  for (int i = 0; i < 5; i++) {
-    arrayStr_str_accZ_5s += sprintf(arrayStr_str_accZ_5s, "%.2f", accZ_5s[i]);  // Use 2 decimal places
-    if (i < 4) {
-      arrayStr_str_accZ_5s += sprintf(arrayStr_str_accZ_5s, ", ");
+  char str_accZ_arr[100];
+  char* arrayStr_str_accZ_arr = str_accZ_arr;
+  arrayStr_str_accZ_arr += sprintf(arrayStr_str_accZ_arr, "[");
+  for (int i = 0; i < n; i++) {
+    arrayStr_str_accZ_arr += sprintf(arrayStr_str_accZ_arr, "%.2f", accZ_arr[i]);  // Use 2 decimal places
+    if (i < n - 1) {
+      arrayStr_str_accZ_arr += sprintf(arrayStr_str_accZ_arr, ", ");
     }
   }
-  arrayStr_str_accZ_5s += sprintf(arrayStr_str_accZ_5s, "]");
+  arrayStr_str_accZ_arr += sprintf(arrayStr_str_accZ_arr, "]");
 
-  char str_pitch_5s[100];
-  char* arrayStr_str_pitch_5s = str_pitch_5s;
-  arrayStr_str_pitch_5s += sprintf(arrayStr_str_pitch_5s, "[");
-  for (int i = 0; i < 5; i++) {
-    arrayStr_str_pitch_5s += sprintf(arrayStr_str_pitch_5s, "%.2f", pitch_5s[i]);  // Use 2 decimal places
-    if (i < 4) {
-      arrayStr_str_pitch_5s += sprintf(arrayStr_str_pitch_5s, ", ");
+  char str_pitch_arr[100];
+  char* arrayStr_str_pitch_arr = str_pitch_arr;
+  arrayStr_str_pitch_arr += sprintf(arrayStr_str_pitch_arr, "[");
+  for (int i = 0; i < n; i++) {
+    arrayStr_str_pitch_arr += sprintf(arrayStr_str_pitch_arr, "%.2f", pitch_arr[i]);  // Use 2 decimal places
+    if (i < n - 1) {
+      arrayStr_str_pitch_arr += sprintf(arrayStr_str_pitch_arr, ", ");
     }
   }
-  arrayStr_str_pitch_5s += sprintf(arrayStr_str_pitch_5s, "]");
+  arrayStr_str_pitch_arr += sprintf(arrayStr_str_pitch_arr, "]");
 
-  char str_roll_5s[100];
-  char* arrayStr_str_roll_5s = str_roll_5s;
-  arrayStr_str_roll_5s += sprintf(arrayStr_str_roll_5s, "[");
-  for (int i = 0; i < 5; i++) {
-    arrayStr_str_roll_5s += sprintf(arrayStr_str_roll_5s, "%.2f", roll_5s[i]);  // Use 2 decimal places
-    if (i < 4) {
-      arrayStr_str_roll_5s += sprintf(arrayStr_str_roll_5s, ", ");
+  char str_roll_arr[100];
+  char* arrayStr_str_roll_arr = str_roll_arr;
+  arrayStr_str_roll_arr += sprintf(arrayStr_str_roll_arr, "[");
+  for (int i = 0; i < n; i++) {
+    arrayStr_str_roll_arr += sprintf(arrayStr_str_roll_arr, "%.2f", roll_arr[i]);  // Use 2 decimal places
+    if (i < n - 1) {
+      arrayStr_str_roll_arr += sprintf(arrayStr_str_roll_arr, ", ");
     }
   }
-  arrayStr_str_roll_5s += sprintf(arrayStr_str_roll_5s, "]");
+  arrayStr_str_roll_arr += sprintf(arrayStr_str_roll_arr, "]");
 
-  char str_yaw_5s[100];
-  char* arrayStr_str_yaw_5s = str_yaw_5s;
-  arrayStr_str_yaw_5s += sprintf(arrayStr_str_yaw_5s, "[");
-  for (int i = 0; i < 5; i++) {
-    arrayStr_str_yaw_5s += sprintf(arrayStr_str_yaw_5s, "%.2f", yaw_5s[i]);  // Use 2 decimal places
-    if (i < 4) {
-      arrayStr_str_yaw_5s += sprintf(arrayStr_str_yaw_5s, ", ");
+  char str_yaw_arr[100];
+  char* arrayStr_str_yaw_arr = str_yaw_arr;
+  arrayStr_str_yaw_arr += sprintf(arrayStr_str_yaw_arr, "[");
+  for (int i = 0; i < n; i++) {
+    arrayStr_str_yaw_arr += sprintf(arrayStr_str_yaw_arr, "%.2f", yaw_arr[i]);  // Use 2 decimal places
+    if (i < n - 1) {
+      arrayStr_str_yaw_arr += sprintf(arrayStr_str_yaw_arr, ", ");
     }
   }
-  arrayStr_str_yaw_5s += sprintf(arrayStr_str_yaw_5s, "]");
+  arrayStr_str_yaw_arr += sprintf(arrayStr_str_yaw_arr, "]");
 
 
-  snprintf(msg, MSG_BUFFER_SIZE, "1 %s", str_gyroX_5s);
+  snprintf(msg, MSG_BUFFER_SIZE, "1 %s", str_gyroX_arr);
   client.publish("Arduino/GYRO X |", msg);
 
-  snprintf(msg, MSG_BUFFER_SIZE, "2 %s", str_gyroY_5s);
+  snprintf(msg, MSG_BUFFER_SIZE, "2 %s", str_gyroY_arr);
   client.publish("Arduino/GYRO Y |", msg);
 
-  snprintf(msg, MSG_BUFFER_SIZE, "3 %s", str_gyroZ_5s);
+  snprintf(msg, MSG_BUFFER_SIZE, "3 %s", str_gyroZ_arr);
   client.publish("Arduino/GYRO Z |", msg);
 
-  snprintf(msg, MSG_BUFFER_SIZE, "4 %s", str_accX_5s);
+  snprintf(msg, MSG_BUFFER_SIZE, "4 %s", str_accX_arr);
   client.publish("Arduino/ACC X |", msg);
 
-  snprintf(msg, MSG_BUFFER_SIZE, "5 %s", str_accY_5s);
+  snprintf(msg, MSG_BUFFER_SIZE, "5 %s", str_accY_arr);
   client.publish("Arduino/ACC Y |", msg);
 
-  snprintf(msg, MSG_BUFFER_SIZE, "6 %s", str_accZ_5s);
+  snprintf(msg, MSG_BUFFER_SIZE, "6 %s", str_accZ_arr);
   client.publish("Arduino/ACC Z |", msg);
 
-  snprintf(msg, MSG_BUFFER_SIZE, "7 %s", str_pitch_5s);
+  snprintf(msg, MSG_BUFFER_SIZE, "7 %s", str_pitch_arr);
   client.publish("Arduino/P |", msg);
 
-  snprintf(msg, MSG_BUFFER_SIZE, "8 %s", str_roll_5s);
+  snprintf(msg, MSG_BUFFER_SIZE, "8 %s", str_roll_arr);
   client.publish("Arduino/R |", msg);
 
-  snprintf(msg, MSG_BUFFER_SIZE, "9 %s", str_yaw_5s);
+  snprintf(msg, MSG_BUFFER_SIZE, "9 %s", str_yaw_arr);
   client.publish("Arduino/Y |", msg);
 }
 
@@ -457,67 +457,68 @@ void saving_data() {
     dataFile.close();
   }
 
-  gyroX_5s[pencacahArray] = gyroX;
-  gyroY_5s[pencacahArray] = gyroY;
-  gyroZ_5s[pencacahArray] = gyroZ;
+  gyroX_arr[pencacahArray] = gyroX;
+  gyroY_arr[pencacahArray] = gyroY;
+  gyroZ_arr[pencacahArray] = gyroZ;
 
-  accX_5s[pencacahArray] = accX;
-  accY_5s[pencacahArray] = accY;
-  accZ_5s[pencacahArray] = accZ;
+  accX_arr[pencacahArray] = accX;
+  accY_arr[pencacahArray] = accY;
+  accZ_arr[pencacahArray] = accZ;
 
-  pitch_5s[pencacahArray] = angle_pitch;
-  roll_5s[pencacahArray] = angle_roll * -1;
-  yaw_5s[pencacahArray] = angle_yaw;
+  pitch_arr[pencacahArray] = angle_pitch;
+  roll_arr[pencacahArray] = angle_roll * -1;
+  yaw_arr[pencacahArray] = angle_yaw;
 
-  // for (int i = 0; i < 5; i++) {
-  //   Serial.print(gyroX_5s[i]);
+  // for (int i = 0; i < n; i++) {
+  //   Serial.print(gyroX_arr[i]);
   //   Serial.print(", ");
   // }
   // Serial.println();
-  // for (int i = 0; i < 5; i++) {
-  //   Serial.print(gyroY_5s[i]);
+  // for (int i = 0; i < n; i++) {
+  //   Serial.print(gyroY_arr[i]);
   //   Serial.print(", ");
   // }
   // Serial.println();
-  // for (int i = 0; i < 5; i++) {
-  //   Serial.print(gyroZ_5s[i]);
+  // for (int i = 0; i < n; i++) {
+  //   Serial.print(gyroZ_arr[i]);
   //   Serial.print(", ");
   // }
   // Serial.println();
-  // for (int i = 0; i < 5; i++) {
-  //   Serial.print(accX_5s[i]);
+  // for (int i = 0; i < n; i++) {
+  //   Serial.print(accX_arr[i]);
   //   Serial.print(", ");
   // }
   // Serial.println();
-  // for (int i = 0; i < 5; i++) {
-  //   Serial.print(accY_5s[i]);
+  // for (int i = 0; i < n; i++) {
+  //   Serial.print(accY_arr[i]);
   //   Serial.print(", ");
   // }
   // Serial.println();
-  // for (int i = 0; i < 5; i++) {
-  //   Serial.print(accZ_5s[i]);
+  // for (int i = 0; i < n; i++) {
+  //   Serial.print(accZ_arr[i]);
   //   Serial.print(", ");
   // }
   // Serial.println();
-  // for (int i = 0; i < 5; i++) {
-  //   Serial.print(pitch_5s[i]);
+  // for (int i = 0; i < n; i++) {
+  //   Serial.print(pitch_arr[i]);
   //   Serial.print(", ");
   // }
   // Serial.println();
-  // for (int i = 0; i < 5; i++) {
-  //   Serial.print(roll_5s[i]);
+  // for (int i = 0; i < n; i++) {
+  //   Serial.print(roll_arr[i]);
   //   Serial.print(", ");
   // }
   // Serial.println();
-  // for (int i = 0; i < 5; i++) {
-  //   Serial.print(yaw_5s[i]);
+  // for (int i = 0; i < n; i++) {
+  //   Serial.print(yaw_arr[i]);
   //   Serial.print(", ");
   // }
   // Serial.println();
 
   pencacahArray += 1;
-  // Serial.println(pencacahArray);
-  if (pencacahArray == 5) {
+  Serial.println(pencacahArray);
+  Serial.println(n);
+  if (pencacahArray > n) {
     pencacahArray = 0;
   }
 }
