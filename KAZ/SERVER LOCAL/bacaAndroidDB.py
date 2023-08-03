@@ -14,7 +14,7 @@ fig2.suptitle('Grafik Data Android', fontsize=12, fontweight='bold')
 def animate(i):
 
     # Read data from the mqtt_logs_andro.csv file for the fifth subplot (assuming the format is the same)
-    graph_data_andro = open('arduinodata.csv', 'r').readlines()
+    graph_data_andro = open('mqtt_logs_ardu.csv', 'r').readlines()
     lines_andro = graph_data_andro[1:]
     DataX = []
     DataY = []
@@ -86,36 +86,12 @@ def animate(i):
     ax6.set_title('Android')
     ax6.legend()
 
-    ax7.clear()
-    ax7.plot(Time_andro, P_andro, label='Pitch (Android)', marker='.')
-    ax7.plot(Time, P, label='Pitch (Arduino)', marker='.')
-    ax7.set_ylim(-180, 180)
-    ax7.set_ylabel("Nilai")
-    ax7.set_xlabel("TimeStamp (s)")
-    ax7.set_title('Perbandingan')
-    ax7.legend()
+    
 
-    ax8.clear()
-    ax8.plot(Time_andro, R_andro, label='Roll (Android)', marker='.')
-    ax8.plot(Time, R, label='Roll (Arduino)', marker='.')
-    ax8.set_ylim(-180, 180)
-    ax8.set_ylabel("Nilai")
-    ax8.set_xlabel("TimeStamp (s)")
-    ax8.legend()
-
-    ax9.clear()
-    ax9.plot(Time_andro, Y_andro, label='Yaw (Android)', marker='.')
-    ax9.plot(Time, Y, label='Yaw (Arduino)', marker='.')
-    ax9.set_ylim(0, 360)
-    ax9.set_ylabel("Nilai")
-    ax9.set_xlabel("TimeStamp (s)")
-    ax9.legend()
-
-open('mqtt_logs.csv', 'w').close()
 open('mqtt_logs_andro.csv', 'w').close()  # Create and clear the mqtt_logs_andro.csv file
 
 timestamp = -1
-ani = animation.FuncAnimation(fig, animate, interval=1000)
+ani = animation.FuncAnimation(fig2, animate, interval=1000)
 
 while True:
     # generate_random_data(timestamp)

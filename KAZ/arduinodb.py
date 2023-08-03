@@ -4,8 +4,8 @@ import csv
 import os
 import mysql.connector
 
-if os.path.exists('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv'):
-    os.remove('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv')
+if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_ardu.csv'):
+    os.remove('./KAZ/SERVERLOCAL/mqtt_logs_ardu.csv')
 
 client_ip = ''  # Bind to all available network interfaces for receiving broadcast messages
 client_port = 50000  # Replace with the desired port number
@@ -31,7 +31,7 @@ def insert_data_to_database(data):
         cursor = connection.cursor()
 
         # Adjust the INSERT query according to the table structure in your database
-        query = "INSERT INTO arduino1 (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" 
+        query = "INSERT INTO arduino (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" 
 
         for item in data:
             # Convert each value from string to float before inserting into the database
