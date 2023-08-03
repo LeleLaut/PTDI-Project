@@ -97,7 +97,7 @@ WiFiUDP udp;
 WiFiClient espClient;
 PubSubClient client(espClient);
 unsigned long lastMsg = 0;
-#define MSG_BUFFER_SIZE (50)
+#define MSG_BUFFER_SIZE (200)
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
 
@@ -383,8 +383,7 @@ void publish() {
     }
   }
   arrayStr_str_yaw_arr += sprintf(arrayStr_str_yaw_arr, "]");
-
-
+   
   snprintf(msg, MSG_BUFFER_SIZE, "1 %s", str_gyroX_arr);
   client.publish("Arduino/GYRO X |", msg);
 
@@ -445,10 +444,10 @@ void monitoring() {
   Serial.print(angle_pitch);
 
   Serial.print(" | R : ");
-  Serial.print(angle_roll);
+  Serial.print(angle_roll * -1);
 
   Serial.print(" | Y : ");
-  Serial.println(angle_yaw);
+  Serial.println(angle_yaw );
 }
 
 void saving_data() {
@@ -517,8 +516,8 @@ void saving_data() {
   // Serial.println();
 
   pencacahArray += 1;
-  Serial.println(pencacahArray);
-  Serial.println(n);
+  // Serial.println(pencacahArray);
+  // Serial.println(n);
   if (pencacahArray > n) {
     pencacahArray = 0;
   }
@@ -526,7 +525,7 @@ void saving_data() {
 
 void calibrateYaw() {
   float sum_yaw = 0;
-  int num_samples = 200;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
+  int num_samples = 100;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
 
   // Mengambil beberapa sampel yaw dan menghitung rata-rata
   for (int i = 0; i < num_samples; i++) {
@@ -536,7 +535,7 @@ void calibrateYaw() {
     if (heading < 0) heading += 2 * PI;
     float heading_deg = heading * 180 / PI;
     sum_yaw += heading_deg;
-    delay(5);  // Jeda 5 ms antara sampel
+    delay(10);  // Jeda 5 ms antara sampel
   }
 
   // Menghitung nilai rata-rata yaw sebagai referensi
