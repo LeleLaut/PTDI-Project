@@ -7,8 +7,8 @@ plt.style.use('ggplot')
 
 # Create a figure with 5 subplots
 fig, ((ax3, ax6),(ax2, ax5),(ax1, ax4)) = plt.subplots(3,2, figsize=(8, 6))
-fig.suptitle('Grafik Data', fontsize=8, fontweight='bold')
 # fig, ((ax3, ax7, ax6),(ax2, ax8, ax5),(ax1, ax9, ax4)) = plt.subplots(3,3, figsize=(8, 6))
+fig.suptitle('Grafik Data', fontsize=8, fontweight='bold')
 # fig, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
 # fig2, ((ax4, ax5, ax6)) = plt.subplots(3,1, figsize=(8, 6))
 # fig3, ((ax7, ax8, ax9)) = plt.subplots(3,1, figsize=(8, 6))
@@ -33,7 +33,6 @@ def animate(i):
     Y = []
     Time = []
     for line in lines:
-        
         if len(line) > 1:
             x, y, z, x1, y1, z1, p, r, y, t = line.split(',')
             GX.append(float(x))
