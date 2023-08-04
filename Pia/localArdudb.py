@@ -39,8 +39,8 @@ def insert_data_to_database(data):
         query = "INSERT INTO arduinolocal (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" 
 
         for item in data:
-            values = [float(value) for value in item[:10]]  
-            values.append(item[10])  
+            values = [float(value) for value in item[:9]]  
+            values.append(item[9])  
             cursor.execute(query, tuple(values))
             connection.commit()
 
@@ -70,6 +70,13 @@ while True:
     except socket.timeout:
         # Timeout occurred, no data received
         pass
+
+# read the data
+df=sql.read_sql('select * from arduino',con)
+# print the data
+print(df)
+# export the data into the excel sheet
+df.to_csv('ds.csv')
 
 # Close the cursor and connection after the loop ends
 connection.close()
