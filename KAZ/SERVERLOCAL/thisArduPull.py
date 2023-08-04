@@ -2,9 +2,13 @@ import socket
 import csv
 import os
 import json
-
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# Connect to a public IP address (e.g., Google's DNS server) to get the local IP
+s.connect(("8.8.8.8", 80))
+# Get the local IP address
+local_ip = s.getsockname()[0]
 # Replace 'BROADCAST_IP' and 'PORT' with the appropriate values
-BROADCAST_IP = '192.168.233.191'
+BROADCAST_IP = local_ip
 PORT = 51111
 
 if os.path.exists('./KAZ/SERVERLOCAL/local_logs_ardu.csv'):
@@ -21,11 +25,14 @@ receive_socket.bind((BROADCAST_IP, PORT))
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-server_ip = '192.168.233.191'
+server_ip = local_ip
 server_port = 52222
 server_socket.bind((server_ip, server_port))
 
-broadcast_address = '192.168.233.255'
+ip_components = local_ip.split('.')
+# Change the last three digits to '255'
+modified_ip = '.'.join(ip_components[:-1] + ['255'])
+broadcast_address = modified_ip
 
 print(f"Listening for broadcasts from ESP8266 on port {PORT}")
 
