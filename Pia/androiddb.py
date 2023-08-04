@@ -4,8 +4,8 @@ import os
 import json
 import mysql.connector
 
-if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_android.csv'):
-    os.remove('./KAZ/SERVERLOCAL/mqtt_logs_android.csv')
+if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv'):
+    os.remove('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv')
 
 mqtt_port = 10153
 ininambah = 0
@@ -20,10 +20,10 @@ def insert_data_to_database(data):
         )
         cursor = connection.cursor()
 
-        query = "INSERT INTO android (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, sumbu_x, sumbu_y, sumbu_z, latitude, longitude, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" 
+        query = "INSERT INTO android (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, pitch, roll, yaw, latitude, longitude, altitude, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" 
 
         for item in data:
-            values = [float(value) for value in item[:12]]  # Mengambil hanya 9 nilai pertama
+            values = [float(value) for value in item[:13]]
             cursor.execute(query, tuple(values))
             connection.commit()
 
@@ -43,7 +43,7 @@ def on_message(client, userdata, message):
     print(list_akhir)
 
     if len(list_akhir) == 5:
-        with open('./KAZ/SERVERLOCAL/mqtt_logs_android.csv', 'a', newline='') as csvfile:
+        with open('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             for list_terakhir in list_akhir:
                 list_terakhir.append(ininambah)
