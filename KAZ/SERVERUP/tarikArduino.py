@@ -3,10 +3,10 @@ import paho.mqtt.client as mqtt
 import os
 import ast
 
-if os.path.exists('./KAZ/SERVER UP/mqtt_logs_ardu.csv'):
-    os.remove('./KAZ/SERVER UP/mqtt_logs_ardu.csv')
+if os.path.exists('./KAZ/SERVERUP/mqtt_logs_ardu.csv'):
+    os.remove('./KAZ/SERVERUP/mqtt_logs_ardu.csv')
 
-mqtt_port=19716
+mqtt_port=10153
 ininambah=0
 
 subscribed_data = []
@@ -29,7 +29,7 @@ def on_message(client, userdata, message):
                 result_lists[j].append(processed_data[i][j])
 
         if len(subscribed_data) == 9:
-            with open('./KAZ/SERVER UP/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
+            with open('./KAZ/SERVERUP/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 for result_list in result_lists:
                     result_list.append(ininambah)

@@ -19,6 +19,6 @@ while True:
     # Receive data from the server
     data, server_address = client_socket.recvfrom(1024)
     received_list=json.loads(data.decode('utf-8'))
-    with open('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
+    with open('./KAZ/SERVERLOCAL/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(received_list)

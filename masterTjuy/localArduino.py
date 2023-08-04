@@ -1,31 +1,23 @@
 import socket
 import csv
 import os
-import json
 
 # Replace 'BROADCAST_IP' and 'PORT' with the appropriate values
-BROADCAST_IP = '192.168.233.191'
+BROADCAST_IP = '192.168.168.191'
 PORT = 51111
 
-if os.path.exists('./KAZ/SERVERLOCAL/local_logs_ardu.csv'):
-    os.remove('./KAZ/SERVERLOCAL/local_logs_ardu.csv')
+if os.path.exists('mqtt_logs_ardu.csv'):
+    os.remove('mqtt_logs_ardu.csv')
 ininambah=0
-
+# Create a UDP socket
 receive_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+# Set socket options to allow broadcasting and reuse the address
 receive_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 receive_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
+# Bind the socket to the local address and port to receive messages
 receive_socket.bind((BROADCAST_IP, PORT))
-
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-
-server_ip = '192.168.233.191'
-server_port = 52222
-server_socket.bind((server_ip, server_port))
-
-broadcast_address = '192.168.233.255'
 
 print(f"Listening for broadcasts from ESP8266 on port {PORT}")
 
@@ -43,12 +35,9 @@ while True:
         # print(f"Received data from ESP8266: {decoded_data} from {esp8266_address[0]}")
         float_list.append(ininambah)
         ininambah+=1
-        with open('./KAZ/SERVERLOCAL/local_logs_ardu.csv', 'a', newline='') as csvfile:
+        with open('mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow(float_list)
-            serialized_data = json.dumps(float_list)
-            server_socket.sendto(serialized_data.encode('utf-8'), (broadcast_address, server_port))
-            print(f"Broadcasted: {serialized_data}")
     
     except socket.timeout:
         # Timeout occurred, no data received

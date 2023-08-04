@@ -4,10 +4,10 @@ import os
 import ssl
 
 
-if os.path.exists('./KAZ/SERVER UP/mqtt_logs_android.csv'):
-    os.remove('./KAZ/SERVER UP/mqtt_logs_android.csv')
+if os.path.exists('./KAZ/SERVERUP/mqtt_logs_android.csv'):
+    os.remove('./KAZ/SERVERUP/mqtt_logs_android.csv')
 
-mqtt_port=19716
+mqtt_port=10153
 ininambah=0
 
 list_akhir=[]
@@ -28,7 +28,7 @@ def on_message(client, userdata, message):
         for i, sublist in enumerate(list_akhir):
             list_akhir[i].append(ininambah)
             ininambah+=1
-            with open('./KAZ/SERVER UP/mqtt_logs_android.csv', 'a', newline='') as csvfile:
+            with open('./KAZ/SERVERUP/mqtt_logs_android.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(list_akhir[i])
  
