@@ -19,8 +19,8 @@ server_socket.bind((server_ip, server_port))
 # Get the broadcast address
 broadcast_address = '192.168.168.255'
 
-if os.path.exists('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv'):
-    os.remove('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv')
+if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_ardu.csv'):
+    os.remove('./KAZ/SERVERLOCAL/mqtt_logs_ardu.csv')
 
 mqtt_port=10153
 ininambah=0
@@ -45,7 +45,7 @@ def on_message(client, userdata, message):
                 result_lists[j].append(processed_data[i][j])
 
         if len(subscribed_data) == 9:
-            with open('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
+            with open('./KAZ/SERVERLOCAL/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 for result_list in result_lists:
                     result_list.append(ininambah)

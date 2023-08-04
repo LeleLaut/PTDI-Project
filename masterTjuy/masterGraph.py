@@ -6,8 +6,9 @@ from matplotlib import style
 plt.style.use('ggplot')
 
 # Create a figure with 5 subplots
-fig, ((ax3, ax7, ax6),(ax2, ax8, ax5),(ax1, ax9, ax4)) = plt.subplots(3,3, figsize=(8, 6))
-fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
+fig, ((ax3, ax6),(ax2, ax5),(ax1, ax4)) = plt.subplots(3,2, figsize=(8, 6))
+fig.suptitle('Grafik Data', fontsize=8, fontweight='bold')
+# fig, ((ax3, ax7, ax6),(ax2, ax8, ax5),(ax1, ax9, ax4)) = plt.subplots(3,3, figsize=(8, 6))
 # fig, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
 # fig2, ((ax4, ax5, ax6)) = plt.subplots(3,1, figsize=(8, 6))
 # fig3, ((ax7, ax8, ax9)) = plt.subplots(3,1, figsize=(8, 6))
@@ -32,6 +33,7 @@ def animate(i):
     Y = []
     Time = []
     for line in lines:
+        
         if len(line) > 1:
             x, y, z, x1, y1, z1, p, r, y, t = line.split(',')
             GX.append(float(x))
@@ -159,30 +161,30 @@ def animate(i):
     ax6.set_title('Android')
     ax6.legend()
 
-    ax7.clear()
-    ax7.plot(Time_andro, P_andro, label='Pitch (Android)', marker='.')
-    ax7.plot(Time, P, label='Pitch (Arduino)', marker='.')
-    ax7.set_ylim(-180, 180)
-    ax7.set_ylabel("Nilai")
-    ax7.set_xlabel("TimeStamp (s)")
-    ax7.set_title('Perbandingan')
-    ax7.legend()
+    # ax7.clear()
+    # ax7.plot(Time_andro, P_andro, label='Pitch (Android)', marker='.')
+    # ax7.plot(Time, P, label='Pitch (Arduino)', marker='.')
+    # ax7.set_ylim(-180, 180)
+    # ax7.set_ylabel("Nilai")
+    # ax7.set_xlabel("TimeStamp (s)")
+    # ax7.set_title('Perbandingan')
+    # ax7.legend()
 
-    ax8.clear()
-    ax8.plot(Time_andro, R_andro, label='Roll (Android)', marker='.')
-    ax8.plot(Time, R, label='Roll (Arduino)', marker='.')
-    ax8.set_ylim(-180, 180)
-    ax8.set_ylabel("Nilai")
-    ax8.set_xlabel("TimeStamp (s)")
-    ax8.legend()
+    # ax8.clear()
+    # ax8.plot(Time_andro, R_andro, label='Roll (Android)', marker='.')
+    # ax8.plot(Time, R, label='Roll (Arduino)', marker='.')
+    # ax8.set_ylim(-180, 180)
+    # ax8.set_ylabel("Nilai")
+    # ax8.set_xlabel("TimeStamp (s)")
+    # ax8.legend()
 
-    ax9.clear()
-    ax9.plot(Time_andro, Y_andro, label='Yaw (Android)', marker='.')
-    ax9.plot(Time, Y, label='Yaw (Arduino)', marker='.')
-    ax9.set_ylim(0, 360)
-    ax9.set_ylabel("Nilai")
-    ax9.set_xlabel("TimeStamp (s)")
-    ax9.legend()
+    # ax9.clear()
+    # ax9.plot(Time_andro, Y_andro, label='Yaw (Android)', marker='.')
+    # ax9.plot(Time, Y, label='Yaw (Arduino)', marker='.')
+    # ax9.set_ylim(0, 360)
+    # ax9.set_ylabel("Nilai")
+    # ax9.set_xlabel("TimeStamp (s)")
+    # ax9.legend()
 
 open('mqtt_logs.csv', 'w').close()
 open('mqtt_logs_andro.csv', 'w').close()  # Create and clear the mqtt_logs_andro.csv file
