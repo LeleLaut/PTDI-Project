@@ -4,7 +4,7 @@ import os
 import mysql.connector
 
 # Replace 'BROADCAST_IP' and 'PORT' with the appropriate values
-BROADCAST_IP = '192.168.168.237'
+BROADCAST_IP = '192.168.233.237'
 PORT = 51111
 
 if os.path.exists('./KAZ/SERVERLOCAL/local_logs_ardu.csv'):
@@ -39,8 +39,8 @@ def insert_data_to_database(data):
         query = "INSERT INTO arduinolocal (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)" 
 
         for item in data:
-            values = [float(value) for value in item[:9]]  # Ambil hanya 9 nilai pertama
-            values.append(item[9])  # Tambahkan nilai counter sebagai kolom terakhir
+            values = [float(value) for value in item[:9]]  
+            values.append(item[9])  
             cursor.execute(query, tuple(values))
             connection.commit()
 
@@ -70,6 +70,13 @@ while True:
     except socket.timeout:
         # Timeout occurred, no data received
         pass
+
+# read the data
+df=sql.read_sql('select * from arduino',con)
+# print the data
+print(df)
+# export the data into the excel sheet
+df.to_csv('ds.csv')
 
 # Close the cursor and connection after the loop ends
 connection.close()
