@@ -2,6 +2,12 @@ import socket
 import json
 import csv 
 import threading
+import os
+
+if os.path.exists('./KAZ/SERVERLOCAL/local_logs_ardu.csv'):
+    os.remove('./KAZ/SERVERLOCAL/local_logs_ardu.csv')
+if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv'):
+    os.remove('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv')    
 
 # Function to receive broadcasts on port 50000
 def receive_broadcasts(port):
