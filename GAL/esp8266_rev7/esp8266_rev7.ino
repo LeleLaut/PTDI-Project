@@ -16,7 +16,7 @@ Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
 float yaw_offset = 0.0;  // Variabel untuk menyimpan nilai referensi yaw
 float angle_yaw;
 
-const unsigned long interval1 = 500;  //penentu frekuensi
+const unsigned long interval1 = 1000;  //penentu frekuensi
 const unsigned long interval2 = 10;
 const unsigned long interval3 = 5000;
 const unsigned long interval4 = 100;
@@ -63,6 +63,8 @@ float rate_roll = 0;   // Derivatif sudut dari sensor Roll
 float P_pitch[2][2] = { { 0, 0 }, { 0, 0 } };
 float P_roll[2][2] = { { 0, 0 }, { 0, 0 } };
 
+unsigned int counter_sdcard;
+
 float gyroX_arr[n];
 float gyroY_arr[n];
 float gyroZ_arr[n];
@@ -89,7 +91,7 @@ MyData data;
 const char* ssid = "KAZ";
 const char* password = "modalcok";
 const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 10153;                    // 19716
+const int mqtt_port = 14897;                    // 19716
 unsigned int broadcastPort = 51111;
 
 WiFiUDP udp;
@@ -171,7 +173,7 @@ void reconnect() {
 
 void broadcasting() {
   // const char* broadcastData = "Hello from ESP8266!";
-  udp.beginPacket(IPAddress(255, 255, 255, 255), broadcastPort);
+  udp.beginPacket(IPAddress(192, 168, 233, 191), broadcastPort);
   udp.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw);
   udp.endPacket();
 }
@@ -383,7 +385,7 @@ void publish() {
     }
   }
   arrayStr_str_yaw_arr += sprintf(arrayStr_str_yaw_arr, "]");
-   
+
   snprintf(msg, MSG_BUFFER_SIZE, "1 %s", str_gyroX_arr);
   client.publish("Arduino/GYRO X |", msg);
 
@@ -447,13 +449,14 @@ void monitoring() {
   Serial.print(angle_roll * -1);
 
   Serial.print(" | Y : ");
-  Serial.println(angle_yaw );
+  Serial.println(angle_yaw);
 }
 
 void saving_data() {
+  Serial.println(counter_sdcard);
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw);
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw, counter_sdcard);
     dataFile.close();
   }
 
@@ -516,6 +519,7 @@ void saving_data() {
   // Serial.println();
 
   pencacahArray += 1;
+  counter_sdcard += 1;
   // Serial.println(pencacahArray);
   // Serial.println(n);
   if (pencacahArray > n) {
@@ -525,7 +529,7 @@ void saving_data() {
 
 void calibrateYaw() {
   float sum_yaw = 0;
-  int num_samples = 100;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
+  int num_samples = 200;  // Jumlah sampel untuk kalibrasi (dapat diatur sesuai kebutuhan)
 
   // Mengambil beberapa sampel yaw dan menghitung rata-rata
   for (int i = 0; i < num_samples; i++) {
@@ -535,7 +539,7 @@ void calibrateYaw() {
     if (heading < 0) heading += 2 * PI;
     float heading_deg = heading * 180 / PI;
     sum_yaw += heading_deg;
-    delay(10);  // Jeda 5 ms antara sampel
+    delay(5);  // Jeda 5 ms antara sampel
   }
 
   // Menghitung nilai rata-rata yaw sebagai referensi

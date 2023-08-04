@@ -6,18 +6,27 @@ import socket
 import pickle
 import time
 import json
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# Connect to a public IP address (e.g., Google's DNS server) to get the local IP
+s.connect(("8.8.8.8", 80))
+# Get the local IP address
+local_ip = s.getsockname()[0]
+ip_components = local_ip.split('.')
+# Change the last three digits to '255'
+modified_ip = '.'.join(ip_components[:-1] + ['255'])
+broadcast_address = modified_ip
 
 # Create a UDP socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 # Bind the socket to a specific IP address and port
-server_ip = '192.168.233.191'  # Bind to all available network interfaces
+server_ip = local_ip  # Bind to all available network interfaces
 server_port = 50000  # Replace with the desired port number
 server_socket.bind((server_ip, server_port))
 
 # Get the broadcast address
-broadcast_address = '192.168.233.255'
+broadcast_address = modified_ip
 
 if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_android.csv'):
     os.remove('./KAZ/SERVERLOCAL/mqtt_logs_android.csv')

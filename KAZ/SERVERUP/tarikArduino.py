@@ -6,7 +6,7 @@ import ast
 if os.path.exists('./KAZ/SERVERUP/mqtt_logs_ardu.csv'):
     os.remove('./KAZ/SERVERUP/mqtt_logs_ardu.csv')
 
-mqtt_port=10153
+mqtt_port=14897
 ininambah=0
 
 subscribed_data = []
