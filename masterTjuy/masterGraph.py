@@ -20,7 +20,7 @@ fig.suptitle('Grafik Data', fontsize=8, fontweight='bold')
 
 
 def animate(i):
-    graph_data = open('mqtt_logs_ardu.csv', 'r').readlines()
+    graph_data = open('./masterTjuy/local_logs_ardu.csv', 'r').readlines()
     lines = graph_data[1:]
     GX = []
     GY = []
@@ -89,7 +89,7 @@ def animate(i):
     ax3.legend()
 
     # Read data from the mqtt_logs_andro.csv file for the fifth subplot (assuming the format is the same)
-    graph_data_andro = open('mqtt_logs_andro.csv', 'r').readlines()
+    graph_data_andro = open('./masterTjuy/mqtt_logs_andro.csv', 'r').readlines()
     lines_andro = graph_data_andro[1:]
     DataX = []
     DataY = []
@@ -100,12 +100,13 @@ def animate(i):
     P_andro = []
     R_andro = []
     Y_andro = []
-    A_andro = []
-    L_andro = []
+    Long_andro = []
+    Al_andro = []
+    LAT_andro = []
     Time_andro = []
     for line in lines_andro:
         if len(line) > 1:
-            x, y, z, x1, y1, z1, p, r, y, a, l, t = line.split(',')
+            x, y, z, x1, y1, z1, p, r, y, longi, lat, al, t  = line.split(',')
             DataX.append(float(x))
             DataY.append(float(y))
             DataZ.append(float(z))
@@ -115,8 +116,9 @@ def animate(i):
             P_andro.append(float(p))
             R_andro.append(float(r))
             Y_andro.append(float(y))
-            A_andro.append(float(a))
-            L_andro.append(float(l))
+            Long_andro.append(float(longi))
+            Al_andro.append(float(al))
+            LAT_andro.append(float(lat))
             Time_andro.append(float(t))
 
     # Limit the data to show only the last 10 points
@@ -129,8 +131,6 @@ def animate(i):
     P_andro = P_andro[-10:]
     R_andro = R_andro[-10:]
     Y_andro = Y_andro[-10:]
-    A_andro = A_andro[-10:]
-    L_andro = L_andro[-10:]
     Time_andro = Time_andro[-10:]
 
     ax4.clear()
