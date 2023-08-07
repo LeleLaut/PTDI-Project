@@ -80,19 +80,11 @@ float yaw_arr[n];
 int pencacahArray = 0;
 int counter_sdcard = 0;
 
-struct MyData {
-  byte X;
-  byte Y;
-  byte Z;
-};
-
-MyData data;
-
 // Update these with values suitable for your network.
 const char* ssid = "KAZ";
 const char* password = "modalcok";
 const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 14897;                    // 19716
+const int mqtt_port = 18746;                    // 19716
 unsigned int broadcastPort = 51111;
 
 WiFiUDP udp;
@@ -477,11 +469,9 @@ void saving_data() {
   Serial.println(pencacahArray);
   pencacahArray += 1;
 
-  // Serial.println(pencacahArray);
-  // Serial.println(n);
-  // if (pencacahArray > n) {
-  //   pencacahArray = 0;
-  // }
+  if (pencacahArray > n) {
+    pencacahArray = 0;
+  }
 }
 
 void calibrateYaw() {
