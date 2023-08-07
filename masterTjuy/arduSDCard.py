@@ -7,12 +7,11 @@ fig, ((ax1, ax2, ax3)) = plt.subplots(3, 1, figsize=(8, 6))
 fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
 
 def animate(i):
-    graph_data = open('arduinoini.csv', 'r').readlines()
+    graph_data = open('data.txt', 'r').readlines()
     #graph_data = graph_data.replace('"', '')
     lines = graph_data[1:]  # Skip header line
     lines = [elem.replace('"', '') for elem in lines]
     
-    ID = []
     GX = []
     GY = []
     GZ = []
@@ -22,13 +21,11 @@ def animate(i):
     P = []
     R = []
     Y = []
-    TS = []
     Time = []
     for line in lines:
         # print(graph_data)
         if len(line) > 1:
-            id, x, y, z, x1, y1, z1, p, r, y, t, ts = line.split(';')
-            # ID.append(float(id))
+            x, y, z, x1, y1, z1, p, r, y, t= line.split(',')
             GX.append(float(x))
             GY.append(float(y))
             GZ.append(float(z))
@@ -39,7 +36,7 @@ def animate(i):
             R.append(float(r))
             Y.append(float(y))
             Time.append(float(t))
-            # TS.append(float(ts))
+
 
     i_minus_10 = max(0, i - 10)
 
@@ -53,8 +50,6 @@ def animate(i):
     P = P[i_minus_10:i+1]
     R = R[i_minus_10:i+1]
     Y = Y[i_minus_10:i+1]
-    # ID = ID[-10:]
-    # TS = TS[-10:]
     Time = Time[i_minus_10:i+1]
 
 

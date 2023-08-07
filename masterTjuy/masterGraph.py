@@ -117,8 +117,8 @@ def animate(i):
             R_andro.append(float(r))
             Y_andro.append(float(y))
             Long_andro.append(float(longi))
-            Al_andro.append(float(al))
             LAT_andro.append(float(lat))
+            Al_andro.append(float(al))
             Time_andro.append(float(t))
 
     # Limit the data to show only the last 10 points
