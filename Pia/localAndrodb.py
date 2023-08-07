@@ -18,7 +18,7 @@ server_port = 50000  # Replace with the desired port number
 server_socket.bind((server_ip, server_port))
 
 # Get the broadcast address
-broadcast_address = '192.168.168.255'
+broadcast_address = '192.168.233.255'
 
 if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv'):
     os.remove('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv')

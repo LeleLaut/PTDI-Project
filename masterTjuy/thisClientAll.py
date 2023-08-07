@@ -4,10 +4,10 @@ import csv
 import threading
 import os
 
-if os.path.exists('./KAZ/masterTjuy/local_logs_ardu.csv'):
-    os.remove('./KAZ/masterTjuy/local_logs_ardu.csv')
-if os.path.exists('./KAZ/masterTjuy/mqtt_logs_andro.csv'):
-    os.remove('./KAZ/masterTjuy/mqtt_logs_andro.csv')    
+if os.path.exists('./masterTjuy/local_logs_ardu.csv'):
+    os.remove('./masterTjuy/local_logs_ardu.csv')
+if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
+    os.remove('./masterTjuy/mqtt_logs_andro.csv')    
 
 # Function to receive broadcasts on port 50000
 def receive_broadcasts(port):
@@ -28,12 +28,12 @@ def receive_broadcasts(port):
         data, server_address = client_socket.recvfrom(1024)
         received_list = json.loads(data.decode('utf-8'))
         if port==50000:
-            with open('./KAZ/masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
+            with open('./masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(received_list)
         
         if port==52222:
-            with open('./KAZ/masterTjuy/local_logs_ardu.csv', 'a', newline='') as csvfile:
+            with open('./masterTjuy/local_logs_ardu.csv', 'a', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow(received_list)
 

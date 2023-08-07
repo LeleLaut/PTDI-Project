@@ -7,7 +7,7 @@ import mysql.connector
 if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv'):
     os.remove('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv')
 
-mqtt_port = 10153
+mqtt_port = 18746
 ininambah = 0
 
 def insert_data_to_database(data):
