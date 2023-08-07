@@ -63,7 +63,7 @@ float rate_roll = 0;   // Derivatif sudut dari sensor Roll
 float P_pitch[2][2] = { { 0, 0 }, { 0, 0 } };
 float P_roll[2][2] = { { 0, 0 }, { 0, 0 } };
 
-unsigned int counter_sdcard;
+
 
 float gyroX_arr[n];
 float gyroY_arr[n];
@@ -78,20 +78,13 @@ float roll_arr[n];
 float yaw_arr[n];
 
 int pencacahArray = 0;
-
-struct MyData {
-  byte X;
-  byte Y;
-  byte Z;
-};
-
-MyData data;
+int counter_sdcard = 0;
 
 // Update these with values suitable for your network.
 const char* ssid = "KAZ";
 const char* password = "modalcok";
 const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 14897;                    // 19716
+const int mqtt_port = 18746;                    // 19716
 unsigned int broadcastPort = 51111;
 
 WiFiUDP udp;
@@ -453,7 +446,6 @@ void monitoring() {
 }
 
 void saving_data() {
-  Serial.println(counter_sdcard);
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
     dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw, counter_sdcard);
@@ -472,56 +464,11 @@ void saving_data() {
   roll_arr[pencacahArray] = angle_roll * -1;
   yaw_arr[pencacahArray] = angle_yaw;
 
-  // for (int i = 0; i < n; i++) {
-  //   Serial.print(gyroX_arr[i]);
-  //   Serial.print(", ");
-  // }
-  // Serial.println();
-  // for (int i = 0; i < n; i++) {
-  //   Serial.print(gyroY_arr[i]);
-  //   Serial.print(", ");
-  // }
-  // Serial.println();
-  // for (int i = 0; i < n; i++) {
-  //   Serial.print(gyroZ_arr[i]);
-  //   Serial.print(", ");
-  // }
-  // Serial.println();
-  // for (int i = 0; i < n; i++) {
-  //   Serial.print(accX_arr[i]);
-  //   Serial.print(", ");
-  // }
-  // Serial.println();
-  // for (int i = 0; i < n; i++) {
-  //   Serial.print(accY_arr[i]);
-  //   Serial.print(", ");
-  // }
-  // Serial.println();
-  // for (int i = 0; i < n; i++) {
-  //   Serial.print(accZ_arr[i]);
-  //   Serial.print(", ");
-  // }
-  // Serial.println();
-  // for (int i = 0; i < n; i++) {
-  //   Serial.print(pitch_arr[i]);
-  //   Serial.print(", ");
-  // }
-  // Serial.println();
-  // for (int i = 0; i < n; i++) {
-  //   Serial.print(roll_arr[i]);
-  //   Serial.print(", ");
-  // }
-  // Serial.println();
-  // for (int i = 0; i < n; i++) {
-  //   Serial.print(yaw_arr[i]);
-  //   Serial.print(", ");
-  // }
-  // Serial.println();
-
+  Serial.println(counter_sdcard);
+  counter_sdcard = counter_sdcard + 1;
+  Serial.println(pencacahArray);
   pencacahArray += 1;
-  counter_sdcard += 1;
-  // Serial.println(pencacahArray);
-  // Serial.println(n);
+
   if (pencacahArray > n) {
     pencacahArray = 0;
   }
