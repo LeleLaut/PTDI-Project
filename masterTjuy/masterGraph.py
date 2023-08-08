@@ -11,7 +11,6 @@ fig.suptitle('Grafik Data', fontsize=8, fontweight='bold')
 # fig, ((ax3, ax7, ax6),(ax2, ax8, ax5),(ax1, ax9, ax4)) = plt.subplots(3,3, figsize=(8, 6))
 # fig, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
 # fig2, ((ax4, ax5, ax6)) = plt.subplots(3,1, figsize=(8, 6))
-# fig3, ((ax7, ax8, ax9)) = plt.subplots(3,1, figsize=(8, 6))
 # fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
 # fig2.suptitle('Grafik Data Android', fontsize=12, fontweight='bold')
 # fig3.suptitle('Grafik Perbandingan', fontsize=12, fontweight='bold')
@@ -117,8 +116,8 @@ def animate(i):
             R_andro.append(float(r))
             Y_andro.append(float(y))
             Long_andro.append(float(longi))
-            Al_andro.append(float(al))
             LAT_andro.append(float(lat))
+            Al_andro.append(float(al))
             Time_andro.append(float(t))
 
     # Limit the data to show only the last 10 points
