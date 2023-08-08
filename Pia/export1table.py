@@ -26,7 +26,7 @@ def export_to_csv():
     connection.close()
 
     # Menyimpan DataFrame ke file CSV
-    df.to_csv('android.csv', index=False)
+    df.to_csv('android2.csv', index=False)
 
     print("Data telah diekspor ke data.csv")
 
