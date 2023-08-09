@@ -1,20 +1,25 @@
 #include <Wire.h>
 #include <MPU6050_light.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 MPU6050 mpu(Wire);
 
-const float alpha = 0.4; // Smoothing factor (adjust as needed)
+const float alpha = 0.4;  // Smoothing factor (adjust as needed)
 
 float smoothedAngleX = 0.0;
 float smoothedAngleY = 0.0;
 float smoothedAngleZ = 0.0;
 
 void setup() {
-  Serial.begin(9600);                                                
+  Serial.begin(9600);
+  lcd.init();
+  lcd.backlight();
   Wire.begin();
   mpu.begin();
-  Serial.println(F("Calculating gyro offset, do not move MPU6050"));       
-  mpu.calcGyroOffsets(); // the calibration
+  Serial.println(F("Calculating gyro offset, do not move MPU6050"));
+  mpu.calcGyroOffsets();  // the calibration
 }
 
 void loop() {
@@ -40,5 +45,11 @@ void loop() {
   Serial.print(" | Y : ");
   Serial.println(smoothedAngleZ);
 
+  lcd.setCursor(0, 0);
+  lcd.printf("%.2f %.2f", smoothedAngleX, smoothedAngleY);
+  lcd.setCursor(0, 1);
+  lcd.printf("%.2f", smoothedAngleZ);
+
   delay(100);
+  lcd.clear();
 }
