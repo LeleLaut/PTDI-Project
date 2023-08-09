@@ -10,10 +10,10 @@
 #include <WiFiUdp.h>
 #include <LiquidCrystal_I2C.h>
 
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 #define I2C_SDA_PIN D2
 #define I2C_SCL_PIN D1
-
-LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
 float yaw_offset = 0.0;  // Variabel untuk menyimpan nilai referensi yaw
@@ -85,9 +85,9 @@ int counter_sdcard = 0;
 
 // Update these with values suitable for your network.
 const char* ssid = "KAZ";
-const char* password = "modalcok";
+const char* password = "modalcokla";
 const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 18746;                    // 19716
+const int mqtt_port = 17149;                    // 19716
 unsigned int broadcastPort = 51111;
 
 WiFiUDP udp;
@@ -107,10 +107,10 @@ void setup_wifi() {
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
-  lcd.clear;
+  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Connecting to: ");
-  lcd.setCursor(1, 0);
+  lcd.setCursor(0, 1);
   lcd.print(ssid);
 
 
@@ -128,16 +128,18 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-  lcd.clear;
+  lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Connected");
+  lcd.print("Connected to:");
+  lcd.setCursor(0, 1);
+  lcd.print(ssid);
 }
 
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
-    lcd.clear;
+    lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Connecting MQTT");
     // Create a random client ID
@@ -146,7 +148,7 @@ void reconnect() {
     // Attempt to connect
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
-      lcd.clear;
+      lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("MQTT Connected");
       // Once connected, publish an announcement...
@@ -157,7 +159,7 @@ void reconnect() {
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
-      lcd.clear;
+      lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print("MQTT Failed");
       // Wait 5 seconds before retrying
@@ -168,7 +170,7 @@ void reconnect() {
 
 void broadcasting() {
   // const char* broadcastData = "Hello from ESP8266!";
-  udp.beginPacket(IPAddress(192, 168, 233, 191), broadcastPort);
+  udp.beginPacket(IPAddress(192, 168, 11, 191), broadcastPort);
   udp.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw);
   udp.endPacket();
 }
@@ -448,7 +450,9 @@ void monitoring() {
 
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.printf("%.1f, %.1f, %.1f", angle_pitch, angle_roll * -1, angle_yaw);
+  lcd.printf("%.2f %.2f", angle_pitch, angle_roll * -1);
+  lcd.setCursor(0, 1);
+  lcd.printf("%.2f", angle_yaw);
 }
 
 void saving_data() {
@@ -501,6 +505,10 @@ void calibrateYaw() {
 
 void setup() {
   Serial.begin(115200);
+  lcd.init();       // initialize the lcd
+  lcd.backlight();  // Turn on the LCD screen backlight
+  lcd.setCursor(0, 0);
+  lcd.print("Starting up!");
   setup_wifi();
   udp.begin(broadcastPort);
   client.setServer(mqtt_server, mqtt_port);
@@ -522,9 +530,6 @@ void setup() {
   // Menjalankan kalibrasi yaw saat program pertama kali dijalankan
   calibrateYaw();
   adampu.begin();
-
-  lcd.init();       // initialize the lcd
-  lcd.backlight();  // Turn on the LCD screen backlight
 
   // Atur nilai awal state dan P untuk setiap sumbu
   angle_pitch = 0;
