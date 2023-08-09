@@ -3,8 +3,14 @@ import matplotlib.animation as animation
 
 # Create a figure with 3 subplots
 fig, ((ax1, ax2, ax3)) = plt.subplots(3, 1, figsize=(8, 6))
-
 fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
+
+def convert_degrees(degrees):
+    while degrees > 180:
+        degrees -= 360
+    while degrees < -180:
+        degrees += 360
+    return degrees
 
 def animate(i):
     graph_data = open('android ini.csv', 'r').readlines()
@@ -30,7 +36,7 @@ def animate(i):
     for line in lines:
         # print(graph_data)
         if len(line) > 1:
-            id, x, y, z, x1, y1, z1, p, r, y, long ,lat,alt,c, ts  = line.split(',')
+            id, x, y, z, x1, y1, z1, p, r, y, long ,lat,alt,c,ts  = line.split(',')
             #  ID.append(float(id))
             GX.append(float(x))
             GY.append(float(y))
@@ -44,7 +50,6 @@ def animate(i):
             Time.append(float(c))
             Long.append(float(long))
             Lat.append(float(lat))
-
             # TS.append(float(ts))
 
     # Calculate the variable containing i-10
@@ -60,9 +65,11 @@ def animate(i):
     P = P[i_minus_10:i]
     R = R[i_minus_10:i]
     Y = Y[i_minus_10:i]
-    # Time = Time[i_minus_10:i]
+    Time = Time[i_minus_10:i]
     # Long = Long[i_minus_10:i]
     # Lat = Lat[i_minus_10:i]
+
+    Y_converted = [convert_degrees(y) for y in Y]
 
     ax1.clear()
     ax1.plot(Time, GX, label='GX', marker='.')
@@ -85,8 +92,8 @@ def animate(i):
     ax3.clear()
     ax3.plot(Time, P, label='Pitch', marker='.')
     ax3.plot(Time, R, label='Roll', marker='.')
-    ax3.plot(Time, Y, label='Yaw', marker='.')
-    ax3.set_ylim(-360, 360)
+    ax3.plot(Time, Y_converted, label='Yaw', marker='.')
+    ax3.set_ylim(-180, 180)
     ax3.set_title('Arduino')
     ax3.set_ylabel("Nilai")
     ax3.set_xlabel("TimeStamp (s)")
@@ -99,3 +106,5 @@ ani = animation.FuncAnimation(fig, animate, interval=1000)
 
 # Show the plot
 plt.show()
+
+

@@ -1,72 +1,85 @@
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 import numpy as np
-import matplotlib.animation as animation
+from pyquaternion import Quaternion
+import math
 
-# Fungsi untuk membuat model balok berdasarkan data Pitch, Roll, dan Yaw
-def create_cuboid(pitch, roll, yaw):
-    # Panjang, lebar, dan tinggi balok
-    length = 1
-    width = 0.5
-    height = 0.2
+# Membuat sebuah quaternion (contoh)
+quat = Quaternion(axis=[0, 1, 0], angle=math.radians(45))  # Quaternion dengan sumbu rotasi y dan sudut 45 derajat
 
-    # Sudut Pitch, Roll, dan Yaw dalam radian
-    pitch_rad = np.radians(pitch)
-    roll_rad = np.radians(roll)
-    yaw_rad = np.radians(yaw)
+# Menghitung pitch, roll, dan yaw
+pitch = 45
+roll = 0
+yaw = 0
 
-    # Transformasi balok berdasarkan Pitch, Roll, dan Yaw
-    rotation_matrix = np.array([
-        [np.cos(yaw_rad)*np.cos(roll_rad), np.cos(yaw_rad)*np.sin(roll_rad)*np.sin(pitch_rad) - np.sin(yaw_rad)*np.cos(pitch_rad),
-         np.cos(yaw_rad)*np.sin(roll_rad)*np.cos(pitch_rad) + np.sin(yaw_rad)*np.sin(pitch_rad)],
-        [np.sin(roll_rad), np.cos(roll_rad)*np.cos(pitch_rad), -np.cos(roll_rad)*np.sin(pitch_rad)],
-        [-np.sin(yaw_rad)*np.cos(roll_rad), np.sin(yaw_rad)*np.sin(roll_rad)*np.cos(pitch_rad) + np.cos(yaw_rad)*np.sin(pitch_rad),
-         -np.sin(yaw_rad)*np.sin(roll_rad)*np.sin(pitch_rad) + np.cos(yaw_rad)*np.cos(pitch_rad)]
+# Membuat titik-titik sudut kubus berdasarkan pitch, roll, yaw
+def create_cube_vertices(pitch, yaw, roll, scale_factor=0.2):
+    half_size = 0.5 * scale_factor
+    vertices = np.array([
+        [-half_size, -half_size, -half_size],
+        [ half_size, -half_size, -half_size],
+        [ half_size,  half_size, -half_size],
+        [-half_size,  half_size, -half_size],
+        [-half_size, -half_size,  half_size],
+        [ half_size, -half_size,  half_size],
+        [ half_size,  half_size,  half_size],
+        [-half_size,  half_size,  half_size]
     ])
 
-    # Define vertices of the cuboid
-    vertices = np.array([[-length / 2, -width / 2, -height / 2],
-                         [length / 2, -width / 2, -height / 2],
-                         [length / 2, width / 2, -height / 2],
-                         [-length / 2, width / 2, -height / 2],
-                         [-length / 2, -width / 2, height / 2],
-                         [length / 2, -width / 2, height / 2],
-                         [length / 2, width / 2, height / 2],
-                         [-length / 2, width / 2, height / 2]])
-
-    # Apply rotation to the vertices
+    rotation_matrix = Quaternion(axis=[0, 1, 0], angle=yaw).rotation_matrix
     rotated_vertices = np.dot(vertices, rotation_matrix.T)
+
+    pitch_matrix = Quaternion(axis=[1, 0, 0], angle=pitch).rotation_matrix
+    rotated_vertices = np.dot(rotated_vertices, pitch_matrix.T)
+
+    roll_matrix = Quaternion(axis=[0, 0, 1], angle=roll).rotation_matrix
+    rotated_vertices = np.dot(rotated_vertices, roll_matrix.T)
 
     return rotated_vertices
 
-# Fungsi untuk animasi balok 3D
-def animate(i):
-    # Baca data Pitch, Roll, dan Yaw dari sumber data Anda (misalnya dari file CSV)
-    pitch = i  # Contoh sederhana: Pitch berubah sesuai waktu
-    roll = i
-    yaw = i
+cube_vertices = create_cube_vertices(pitch, roll, yaw, scale_factor=0.2)
 
-    # Dapatkan posisi balok 3D yang bergerak sesuai dengan data Pitch, Roll, dan Yaw
-    cuboid_vertices = create_cuboid(pitch, roll, yaw)
+# Pindahkan kubus ke posisi tengah
+center = np.mean(cube_vertices, axis=0)
+cube_vertices -= center
 
-    # Perbarui plot balok 3D
-    ax.clear()
-    ax.set_xlim(-2, 2)
-    ax.set_ylim(-2, 2)
-    ax.set_zlim(-2, 2)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-    ax.set_title('Balok 3D Bergerak')
+# Definisikan sisi-sisi kubus
+cube_faces = [
+    [cube_vertices[0], cube_vertices[1], cube_vertices[2], cube_vertices[3]],
+    [cube_vertices[4], cube_vertices[5], cube_vertices[6], cube_vertices[7]],
+    [cube_vertices[0], cube_vertices[1], cube_vertices[5], cube_vertices[4]],
+    [cube_vertices[2], cube_vertices[3], cube_vertices[7], cube_vertices[6]],
+    [cube_vertices[1], cube_vertices[2], cube_vertices[6], cube_vertices[5]],
+    [cube_vertices[4], cube_vertices[7], cube_vertices[3], cube_vertices[0]]
+]
 
-    # Tampilkan balok 3D
-    ax.scatter(cuboid_vertices[:, 0], cuboid_vertices[:, 1], cuboid_vertices[:, 2], c='r', marker='o')
+# Bagi sisi depan dan sisi lainnya
+front_face = cube_faces[3]
+other_faces = cube_faces[:3] + cube_faces[4:]
 
-# Inisialisasi plot 3D
-fig = plt.figure()
+# Inisialisasi plot dengan ukuran yang lebih besar
+fig = plt.figure(figsize=(10, 8))
 ax = fig.add_subplot(111, projection='3d')
 
-# Animasi balok 3D
-ani = animation.FuncAnimation(fig, animate, frames=360, interval=50)
+# Plot sisi lainnya dengan warna cyan
+ax.add_collection3d(Poly3DCollection(other_faces, facecolors='cyan', linewidths=1, edgecolors='r', alpha=.25))
+
+# Plot sisi depan dengan warna merah
+ax.add_collection3d(Poly3DCollection([front_face], facecolors='red', linewidths=1, edgecolors='r', alpha=.5))
+
+# Set batas aksis XYZ
+ax.set_xlim(-1, 1)  # Atur sesuai skala yang diinginkan
+ax.set_ylim(-1, 1)  # Atur sesuai skala yang diinginkan
+ax.set_zlim(-1, 1)  # Atur sesuai skala yang diinginkan
+
+# Tambahkan garis sumbu X, Y, dan Z
+ax.plot([0, 1], [0, 0], [0, 0], color='green', linewidth=2)  # Garis sumbu X
+ax.plot([0, 0], [0, -1], [0, 0], color='red', linewidth=2)  # Garis sumbu Y
+ax.plot([0, 0], [0, 0], [0, 1], color='blue', linewidth=2)  # Garis sumbu Z
+
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+ax.set_title('3D Cube with Pitch, Roll, and Yaw')
 
 plt.show()
