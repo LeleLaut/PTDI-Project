@@ -5,13 +5,12 @@ import threading
 import os
 import mysql.connector
 
-# Hapus file "local_logs_ardu.csv" dan "mqtt_logs_andro.csv" jika sudah ada
 if os.path.exists('./masterTjuy/local_logs_ardu.csv'):
     os.remove('./masterTjuy/local_logs_ardu.csv')
 if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
     os.remove('./masterTjuy/mqtt_logs_andro.csv')
 
-# Fungsi untuk membuat koneksi baru ke database
+# Fungsi untuk membuat koneksi ke database
 def create_connection():
     return mysql.connector.connect(
         host='localhost',
@@ -29,11 +28,8 @@ def insert_data_to_android(connection, data):
             values = [float(value) for value in item]
             cursor.execute(query, tuple(values))
         connection.commit()
-        print("Data inserted to 'android' table successfully.")
     except Exception as e:
-        print(f"Error while inserting data to Android table: {e}")
-        # Print the data being inserted to check if it's in the expected format
-        print("Data being inserted:", data)
+        print(f"Error saat memasukkan data ke tabel 'android': {e}")
 
 # Fungsi untuk mengirim data ke tabel 'arduinolocal'
 def insert_data_to_arduinolocal(connection, data):
@@ -45,79 +41,68 @@ def insert_data_to_arduinolocal(connection, data):
             values.append(item[9])
             cursor.execute(query, tuple(values))
         connection.commit()
-        print("Data inserted to 'arduinolocal' table successfully.")
     except Exception as e:
-        print(f"Error while inserting data to arduinolocal table: {e}")
-        # Print the data being inserted to check if it's in the expected format
-        print("Data being inserted:", data)
+        print(f"Error saat memasukkan data ke tabel 'arduinolocal': {e}")
 
-# Fungsi untuk menerima data dari server dan menyimpannya ke file CSV
-def receive_broadcasts(port):
+# Fungsi untuk mengolah data sudut agar nilainya berada dalam rentang -180 hingga 180
+def normalize_degrees(degrees):
+    while degrees > 180:
+        degrees -= 360
+    while degrees < -180:
+        degrees += 360
+    return degrees
+
+# Fungsi untuk menerima data dari server dan menulisnya ke file CSV
+def receive_broadcasts(port, connection):
     client_ip = ''
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     client_socket.bind((client_ip, port))
-    print(f"Listening for broadcast messages on port {port}...")
-
+    print(f"Mendengarkan pesan broadcast di port {port}...")
     try:
         while True:
-            data, server_address = client_socket.recvfrom(1024)
-            received_list = json.loads(data.decode('utf-8'))
-            if port == 50000:
-                with open('./masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
-                    csv_writer = csv.writer(csvfile)
-                    csv_writer.writerow(received_list)
-            elif port == 52222:
-                with open('./masterTjuy/local_logs_ardu.csv', 'a', newline='') as csvfile:
-                    csv_writer = csv.writer(csvfile)
-                    csv_writer.writerow(received_list)
+            try:
+                # Terima data dari server
+                data, server_address = client_socket.recvfrom(1024)
+                received_list = json.loads(data.decode('utf-8'))
 
+                # Olah data yaw agar nilainya dalam rentang -180 hingga 180
+                received_list[8] = normalize_degrees(received_list[8])
+
+                if port == 50000:
+                    with open('./masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
+                        csv_writer = csv.writer(csvfile)
+                        csv_writer.writerow(received_list)
+                    insert_data_to_android(connection, [received_list])  # Masukkan data ke tabel 'android'
+                elif port == 52222:
+                    with open('./masterTjuy/local_logs_ardu.csv', 'a', newline='') as csvfile:
+                        csv_writer = csv.writer(csvfile)
+                        csv_writer.writerow(received_list)
+                    insert_data_to_arduinolocal(connection, [received_list])  # Masukkan data ke tabel 'arduinolocal'
+            except Exception as e:
+                print(f"Error saat menerima dan menulis data: {e}")
     except KeyboardInterrupt:
-        print("Broadcast listener terminated.")
-    except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        client_socket.close()
+        print("Menerima data dihentikan.")
 
-# Fungsi untuk memproses data dari file CSV ke database
-def process_csv_and_insert_to_database(connection):
-    try:
-        with open('./masterTjuy/mqtt_logs_andro.csv', 'r') as csvfile:
-            csv_reader = csv.reader(csvfile)
-            data = list(csv_reader)
-            insert_data_to_android(connection, data)
+# Main execution
+if __name__ == "__main__":
+    # Buat koneksi ke database
+    connection = create_connection()
 
-        with open('./masterTjuy/local_logs_ardu.csv', 'r') as csvfile:
-            csv_reader = csv.reader(csvfile)
-            data = list(csv_reader)
-            insert_data_to_arduinolocal(connection, data)
+    # Port untuk menerima data dari server
+    port_mqtt_logs_andro = 50000
+    port_local_logs_ardu = 52222
 
-    except Exception as e:
-        print(f"Error while processing CSV and inserting to database: {e}")
+    # Thread untuk menerima dan menyimpan data dari server ke file CSV
+    thread_port_mqtt = threading.Thread(target=receive_broadcasts, args=(port_mqtt_logs_andro, connection))
+    thread_port_local = threading.Thread(target=receive_broadcasts, args=(port_local_logs_ardu, connection))
+    
+    thread_port_mqtt.start()
+    thread_port_local.start()
+    
+    # Tunggu sampai kedua thread selesai
+    thread_port_mqtt.join()
+    thread_port_local.join()
 
-# Panggil fungsi create_connection untuk membuat koneksi ke database
-connection = create_connection()
-
-# Buat thread untuk menerima data dari server dan menulisnya ke file CSV
-receive_thread_50000 = threading.Thread(target=receive_broadcasts, args=(50000,))
-receive_thread_52222 = threading.Thread(target=receive_broadcasts, args=(52222,))
-
-# Buat thread untuk memproses data dari file CSV dan memasukkan ke database
-process_thread = threading.Thread(target=process_csv_and_insert_to_database, args=(connection,))
-
-# Start thread untuk menerima data
-receive_thread_50000.start()
-receive_thread_52222.start()
-
-# Tunggu hingga thread menerima data selesai
-receive_thread_50000.join()
-receive_thread_52222.join()
-
-# Start thread untuk memproses data dan memasukkan ke database
-process_thread.start()
-
-# Tunggu hingga thread memproses data dan memasukkan ke database selesai
-process_thread.join()
-
-# Tutup koneksi ke database
-connection.close()
+    # Tutup koneksi database setelah selesai memasukkan data
+    connection.close()
