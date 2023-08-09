@@ -72,12 +72,18 @@ def receive_broadcasts(port, connection):
                 if port == 50000:
                     with open('./masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
                         csv_writer = csv.writer(csvfile)
-                        csv_writer.writerow(received_list)
+                        # Tulis data yang sudah di-normalisasi ke file CSV
+                        normalized_data = received_list.copy()
+                        normalized_data[8] = normalize_degrees(normalized_data[8])
+                        csv_writer.writerow(normalized_data)
                     insert_data_to_android(connection, [received_list])  # Masukkan data ke tabel 'android'
                 elif port == 52222:
                     with open('./masterTjuy/local_logs_ardu.csv', 'a', newline='') as csvfile:
                         csv_writer = csv.writer(csvfile)
-                        csv_writer.writerow(received_list)
+                        # Tulis data yang sudah di-normalisasi ke file CSV
+                        normalized_data = received_list.copy()
+                        normalized_data[8] = normalize_degrees(normalized_data[8])
+                        csv_writer.writerow(normalized_data)
                     insert_data_to_arduinolocal(connection, [received_list])  # Masukkan data ke tabel 'arduinolocal'
             except Exception as e:
                 print(f"Error saat menerima dan menulis data: {e}")
