@@ -18,12 +18,12 @@ def export_to_csv():
     df2 = pd.read_sql_query(query2, db_connection)
 
     # Menyimpan DataFrame pertama ke file CSV
-    df1.to_csv('./EXPORT CSV DB/android2.csv', index=False)
+    df1.to_csv('./EXPORT CSV DB/android4.csv', index=False)
 
     # Menyimpan DataFrame kedua ke file CSV
-    df2.to_csv('./EXPORT CSV DB/arduino2.csv', index=False)
+    df2.to_csv('./EXPORT CSV DB/arduino4.csv', index=False)
 
-    print("Data telah diekspor ke android2.csv dan arduino2.csv")
+    print("Data telah diekspor ke android4.csv dan arduino4.csv")
 
 # Panggil fungsi untuk mengekspor data
 export_to_csv()
