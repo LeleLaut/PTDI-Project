@@ -42,14 +42,10 @@ void loop() {
   Serial.print(smoothedAngleX);
   Serial.print(" | R : ");
   Serial.print(smoothedAngleY);
-  Serial.print(" | Y : ");
-  Serial.println(smoothedAngleZ);
 
   lcd.setCursor(0, 0);
   lcd.printf("%.2f %.2f", smoothedAngleX, smoothedAngleY);
-  lcd.setCursor(0, 1);
-  lcd.printf("%.2f", smoothedAngleZ);
 
-  delay(100);
+  delay(500);
   lcd.clear();
 }

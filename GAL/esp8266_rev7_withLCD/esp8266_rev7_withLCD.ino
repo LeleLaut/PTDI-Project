@@ -66,8 +66,6 @@ float rate_roll = 0;   // Derivatif sudut dari sensor Roll
 float P_pitch[2][2] = { { 0, 0 }, { 0, 0 } };
 float P_roll[2][2] = { { 0, 0 }, { 0, 0 } };
 
-
-
 float gyroX_arr[n];
 float gyroY_arr[n];
 float gyroZ_arr[n];
@@ -86,9 +84,9 @@ int counter_sdcard = 0;
 // Update these with values suitable for your network.
 const char* ssid = "KAZ";
 const char* password = "modalcokla";
-const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 17149;                    // 19716
-unsigned int broadcastPort = 51111;
+const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org     0.tcp.ap.ngrok.io
+const int mqtt_port = 17149;                    
+unsigned int broadcastPort = 51111;             // UDP
 
 WiFiUDP udp;
 
@@ -97,7 +95,6 @@ PubSubClient client(espClient);
 unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE (200)
 char msg[MSG_BUFFER_SIZE];
-int value = 0;
 
 
 void setup_wifi() {
@@ -546,7 +543,6 @@ void setup() {
   P_roll[1][0] = 0;
   P_roll[1][1] = 0;
 }
-
 
 void loop() {
   unsigned long currentMillis = millis();  // Mendapatkan waktu saat ini
