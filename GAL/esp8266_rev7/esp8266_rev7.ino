@@ -82,9 +82,9 @@ int counter_sdcard = 0;
 
 // Update these with values suitable for your network.
 const char* ssid = "KAZ";
-const char* password = "modalcok";
+const char* password = "modalcokla";
 const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org 0.tcp.ap.ngrok.io
-const int mqtt_port = 18746;                    // 19716
+const int mqtt_port = 17149;                    // 19716
 unsigned int broadcastPort = 51111;
 
 WiFiUDP udp;
@@ -121,25 +121,6 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
-void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)payload[i]);
-  }
-  Serial.println();
-
-  // Switch on the LED if an 1 was received as first character
-  if ((char)payload[0] == '1') {
-    digitalWrite(BUILTIN_LED, LOW);  // Turn the LED on (Note that LOW is the voltage level
-    // but actually the LED is on; this is because
-    // it is active low on the ESP-01)
-  } else {
-    digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
-  }
-}
-
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
@@ -166,7 +147,7 @@ void reconnect() {
 
 void broadcasting() {
   // const char* broadcastData = "Hello from ESP8266!";
-  udp.beginPacket(IPAddress(192, 168, 233, 191), broadcastPort);
+  udp.beginPacket(IPAddress(192, 168, 11, 191), broadcastPort);
   udp.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw);
   udp.endPacket();
 }

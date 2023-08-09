@@ -3,7 +3,6 @@ from sqlalchemy import create_engine
 
 def export_to_csv():
     # Membuat objek koneksi ke database menggunakan SQLAlchemy
-    # Ganti 'your_username', 'your_password', 'your_host', dan 'your_database' dengan informasi yang sesuai
     db_connection = create_engine("mysql+pymysql://root:@localhost/flightestdb")
 
     # Query untuk mengambil data dari tabel pertama
