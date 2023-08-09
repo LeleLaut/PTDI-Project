@@ -2,7 +2,6 @@ import socket
 import json
 import csv
 import threading
-import os
 import mysql.connector.pooling
 
 # Fungsi untuk membuat koneksi dan mengembalikannya dari pool
@@ -48,7 +47,7 @@ def receive_broadcasts(port):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     client_socket.bind((client_ip, port))
-    print(f"Mendengarkan pesan broadcast di port {port}...")
+    print(f"Listening for broadcast messages on port {port}...")
     try:
         while True:
             try:
@@ -56,7 +55,7 @@ def receive_broadcasts(port):
                 data, server_address = client_socket.recvfrom(1024)
                 received_list = json.loads(data.decode('utf-8'))
 
-                # Olah data yaw agar nilainya dalam rentang -180 hingga 180
+                # Prepocessing data (data yaw rentang -180 hingga 180)
                 received_list[8] = normalize_degrees(float(received_list[8]))
 
                 with create_connection() as connection:
@@ -82,7 +81,7 @@ def receive_broadcasts(port):
 # Main execution
 if __name__ == "__main__":
     try:
-        # Buat pool koneksi
+        # Pool koneksi
         connection_pool = mysql.connector.pooling.MySQLConnectionPool(
             pool_name="mypool",
             pool_size=5,
@@ -103,7 +102,6 @@ if __name__ == "__main__":
         thread_port_mqtt.start()
         thread_port_local.start()
         
-        # Tunggu sampai kedua thread selesai
         thread_port_mqtt.join()
         thread_port_local.join()
     except Exception as e:
