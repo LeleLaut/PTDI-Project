@@ -8,6 +8,9 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_HMC5883_U.h>
 #include <WiFiUdp.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 #define I2C_SDA_PIN D2
 #define I2C_SCL_PIN D1
@@ -104,6 +107,12 @@ void setup_wifi() {
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Connecting to: ");
+  lcd.setCursor(0, 1);
+  lcd.print(ssid);
+
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
@@ -119,18 +128,29 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Connected to:");
+  lcd.setCursor(0, 1);
+  lcd.print(ssid);
 }
 
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Connecting MQTT");
     // Create a random client ID
     String clientId = "ESP8266Client-";
     clientId += String(random(0xffff), HEX);
     // Attempt to connect
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("MQTT Connected");
       // Once connected, publish an announcement...
       client.publish("device/temp", "MQTT Server is Connected");
       // ... and resubscribe
@@ -139,6 +159,9 @@ void reconnect() {
       Serial.print("failed, rc=");
       Serial.print(client.state());
       Serial.println(" try again in 5 seconds");
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("MQTT Failed");
       // Wait 5 seconds before retrying
       delay(5000);
     }
@@ -424,6 +447,12 @@ void monitoring() {
 
   Serial.print(" | Y : ");
   Serial.println(angle_yaw);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.printf("%.2f %.2f", angle_pitch, angle_roll * -1);
+  lcd.setCursor(0, 1);
+  lcd.printf("%.2f", angle_yaw);
 }
 
 void saving_data() {
@@ -476,6 +505,10 @@ void calibrateYaw() {
 
 void setup() {
   Serial.begin(115200);
+  lcd.init();       // initialize the lcd
+  lcd.backlight();  // Turn on the LCD screen backlight
+  lcd.setCursor(0, 0);
+  lcd.print("Starting up!");
   setup_wifi();
   udp.begin(broadcastPort);
   client.setServer(mqtt_server, mqtt_port);
@@ -497,6 +530,7 @@ void setup() {
   // Menjalankan kalibrasi yaw saat program pertama kali dijalankan
   calibrateYaw();
   adampu.begin();
+
   // Atur nilai awal state dan P untuk setiap sumbu
   angle_pitch = 0;
   bias_pitch = 0;
