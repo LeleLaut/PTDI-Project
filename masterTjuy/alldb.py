@@ -18,7 +18,7 @@ def insert_data_to_android(connection, data):
             cursor.execute(query, tuple(values))
         connection.commit()
     except Exception as e:
-        print(f"Error saat memasukkan data ke tabel 'android': {e}")
+        print(f"Error inserting data into 'android' table: {e}")
 
 # Fungsi untuk mengirim data ke tabel 'arduinolocal'
 def insert_data_to_arduinolocal(connection, data):
@@ -31,7 +31,7 @@ def insert_data_to_arduinolocal(connection, data):
             cursor.execute(query, tuple(values))
         connection.commit()
     except Exception as e:
-        print(f"Error saat memasukkan data ke tabel 'arduinolocal': {e}")
+        print(f"Error inserting data into 'arduino' table: {e}")
 
 # Fungsi untuk mengolah data sudut agar nilainya berada dalam rentang -180 hingga 180
 def normalize_degrees(degrees):
@@ -74,9 +74,9 @@ def receive_broadcasts(port):
                             csv_writer.writerow(normalized_data)
                         insert_data_to_arduinolocal(connection, [received_list])
             except Exception as e:
-                print(f"Error saat menerima dan menulis data: {e}")
+                print(f"Error receiving and writing data: {e}")
     except KeyboardInterrupt:
-        print("Menerima data dihentikan.")
+        print("Data reception stopped")
 
 # Main execution
 if __name__ == "__main__":
@@ -105,4 +105,4 @@ if __name__ == "__main__":
         thread_port_mqtt.join()
         thread_port_local.join()
     except Exception as e:
-        print(f"Error utama: {e}")
+        print(f"Main error: {e}")

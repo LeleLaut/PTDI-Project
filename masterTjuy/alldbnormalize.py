@@ -74,7 +74,7 @@ def receive_broadcasts(port):
             except Exception as e:
                 print(f"Error receiving and writing data: {e}")
     except KeyboardInterrupt:
-        print("Data reception stopped.")
+        print("Data reception stopped")
 
 # Main execution
 if __name__ == "__main__":
