@@ -31,7 +31,7 @@ broadcast_address = modified_ip
 if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_android.csv'):
     os.remove('./KAZ/SERVERLOCAL/mqtt_logs_android.csv')
 
-mqtt_port=10153
+mqtt_port=18746
 ininambah=0
 
 list_akhir=[]

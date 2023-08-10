@@ -3,8 +3,14 @@ import matplotlib.animation as animation
 
 # Create a figure with 3 subplots
 fig, ((ax1, ax2, ax3)) = plt.subplots(3, 1, figsize=(8, 6))
-
 fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
+
+def convert_degrees(degrees):
+    while degrees > 180:
+        degrees -= 360
+    while degrees < -180:
+        degrees += 360
+    return degrees
 
 def animate(i):
     graph_data = open('arduinoini.csv', 'r').readlines()
@@ -56,7 +62,7 @@ def animate(i):
     # ID = ID[-10:]
     # TS = TS[-10:]
     Time = Time[i_minus_10:i+1]
-
+    Y_converted = [convert_degrees(y) for y in Y]
 
     ax1.clear()
     ax1.plot(Time, GX, label='GX', marker='.')
@@ -79,15 +85,16 @@ def animate(i):
     ax3.clear()
     ax3.plot(Time, P, label='Pitch', marker='.')
     ax3.plot(Time, R, label='Roll', marker='.')
-    ax3.plot(Time, Y, label='Yaw', marker='.')
+    ax3.plot(Time, Y_converted, label='Yaw', marker='.')
     ax3.set_ylim(-360, 360)
     ax3.set_title('Arduino')
     ax3.set_ylabel("Nilai")
     ax3.set_xlabel("TimeStamp (s)")
     ax3.legend()
 
-# Create the animation outside the animate function
-ani = animation.FuncAnimation(fig, animate, interval=1000)
+hz = int(input("Berapa Hz :"))
+intv = 1/hz * 1000
+ani = animation.FuncAnimation(fig, animate, interval=intv)
 
 # Show the plot
 plt.show()
