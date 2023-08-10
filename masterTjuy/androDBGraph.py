@@ -13,7 +13,7 @@ def convert_degrees(degrees):
     return degrees
 
 def animate(i):
-    graph_data = open('android ini.csv', 'r').readlines()
+    graph_data = open('android3.csv', 'r').readlines()
     #graph_data = graph_data.replace('"', '')
     lines = graph_data[1:]  # Skip header line
     lines = [elem.replace('"', '') for elem in lines]
@@ -36,7 +36,8 @@ def animate(i):
     for line in lines:
         # print(graph_data)
         if len(line) > 1:
-            id, x, y, z, x1, y1, z1, p, r, y, long ,lat,alt,c,ts  = line.split(',')
+            _, x, y, z, x1, y1, z1, p, r, y, _, _, _, c, _  = line.split(',')
+            # x, y, z, x1, y1, z1, p, r, y, long ,lat,alt = line.split(',')
             #  ID.append(float(id))
             GX.append(float(x))
             GY.append(float(y))
@@ -48,8 +49,8 @@ def animate(i):
             R.append(float(r))
             Y.append(float(y))
             Time.append(float(c))
-            Long.append(float(long))
-            Lat.append(float(lat))
+            # Long.append(float(long))
+            # Lat.append(float(lat))
             # TS.append(float(ts))
 
     # Calculate the variable containing i-10
@@ -102,7 +103,9 @@ def animate(i):
 
 
 # Create the animation outside the animate function
-ani = animation.FuncAnimation(fig, animate, interval=1000)
+hz = int(input("Berapa Hz :"))
+intv = 1/hz * 1000
+ani = animation.FuncAnimation(fig, animate, interval=intv)
 
 # Show the plot
 plt.show()

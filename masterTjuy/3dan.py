@@ -79,6 +79,6 @@ while True:
     front_face_collection.set_verts([front_face])
 
     plt.pause(1)
-    ax.view_init(azim=30, elev=30)  # Adjust the view angle if needed
+    ax.view_init(azim=0, elev=0)  # Adjust the view angle if needed
     plt.draw()
     ax.clear()
