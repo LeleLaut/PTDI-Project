@@ -94,8 +94,6 @@ PubSubClient client(espClient);
 unsigned long lastMsg = 0;
 #define MSG_BUFFER_SIZE (200)
 char msg[MSG_BUFFER_SIZE];
-int value = 0;
-
 
 void setup_wifi() {
 
@@ -148,7 +146,7 @@ void reconnect() {
 void broadcasting() {
   // const char* broadcastData = "Hello from ESP8266!";
   udp.beginPacket(IPAddress(192, 168, 11, 191), broadcastPort);
-  udp.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw);
+  udp.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch * -1, angle_roll, angle_yaw);
   udp.endPacket();
 }
 
@@ -417,10 +415,10 @@ void monitoring() {
 
 
   Serial.print("P : ");
-  Serial.print(angle_pitch);
+  Serial.print(angle_pitch * -1);
 
   Serial.print(" | R : ");
-  Serial.print(angle_roll * -1);
+  Serial.print(angle_roll);
 
   Serial.print(" | Y : ");
   Serial.println(angle_yaw);
@@ -429,7 +427,7 @@ void monitoring() {
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw, counter_sdcard);
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch * -1, angle_roll, angle_yaw, counter_sdcard);
     dataFile.close();
   }
 
@@ -441,14 +439,14 @@ void saving_data() {
   accY_arr[pencacahArray] = accY;
   accZ_arr[pencacahArray] = accZ;
 
-  pitch_arr[pencacahArray] = angle_pitch;
-  roll_arr[pencacahArray] = angle_roll * -1;
+  pitch_arr[pencacahArray] = angle_pitch * -1;
+  roll_arr[pencacahArray] = angle_roll;
   yaw_arr[pencacahArray] = angle_yaw;
 
-  Serial.println(counter_sdcard);
-  counter_sdcard = counter_sdcard + 1;
-  Serial.println(pencacahArray);
-  pencacahArray += 1;
+  // Serial.println(counter_sdcard);
+  // counter_sdcard = counter_sdcard + 1;
+  // Serial.println(pencacahArray);
+  // pencacahArray += 1;
 
   if (pencacahArray > n) {
     pencacahArray = 0;
