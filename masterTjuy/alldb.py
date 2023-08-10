@@ -2,7 +2,13 @@ import socket
 import json
 import csv
 import threading
+import os
 import mysql.connector.pooling
+
+if os.path.exists('./masterTjuy/local_logs_ardu.csv'):
+    os.remove('./masterTjuy/local_logs_ardu.csv')
+if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
+    os.remove('./masterTjuy/mqtt_logs_andro.csv')
 
 # Fungsi untuk membuat koneksi dan mengembalikannya dari pool
 def create_connection():
