@@ -9,7 +9,7 @@ def export_to_csv():
     query1 = "SELECT * FROM android;"
 
     # Query untuk mengambil data dari tabel kedua
-    query2 = "SELECT * FROM arduinolocal;"
+    query2 = "SELECT * FROM arduino;"
 
     # Mengeksekusi query pertama dan menyimpan hasilnya dalam DataFrame
     df1 = pd.read_sql_query(query1, db_connection)
@@ -18,12 +18,12 @@ def export_to_csv():
     df2 = pd.read_sql_query(query2, db_connection)
 
     # Menyimpan DataFrame pertama ke file CSV
-    df1.to_csv('./EXPORT CSV DB/android4.csv', index=False)
+    df1.to_csv('./EXPORT CSV DB/android6.csv', index=False)
 
     # Menyimpan DataFrame kedua ke file CSV
-    df2.to_csv('./EXPORT CSV DB/arduino4.csv', index=False)
+    df2.to_csv('./EXPORT CSV DB/arduino6.csv', index=False)
 
-    print("Data telah diekspor ke android4.csv dan arduino4.csv")
+    print("Data telah diekspor ke android6.csv dan arduino6.csv")
 
 # Panggil fungsi untuk mengekspor data
 export_to_csv()

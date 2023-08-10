@@ -22,7 +22,7 @@ def insert_data_to_android(connection, data):
 
 # Function to insert data into the 'arduinolocal' table
 def insert_data_to_arduinolocal(connection, data):
-    query = "INSERT INTO arduinolocal (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    query = "INSERT INTO arduino (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     cursor = connection.cursor()
     try:
         for item in data:
@@ -31,7 +31,7 @@ def insert_data_to_arduinolocal(connection, data):
             cursor.execute(query, tuple(values))
         connection.commit()
     except Exception as e:
-        print(f"Error inserting data into 'arduinolocal' table: {e}")
+        print(f"Error inserting data into 'arduino' table: {e}")
 
 # Function to normalize angle values to the range -180 to 180
 def normalize_degrees(degrees):
