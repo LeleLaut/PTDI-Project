@@ -1,34 +1,24 @@
 import folium
 from folium import plugins
 
-graph_data = open('android.csv', 'r').readlines()
+graph_data = open('android4.csv', 'r').readlines()
 #graph_data = graph_data.replace('"', '')
 lines = graph_data[1:]  # Skip header line
 lines = [elem.replace('"', '') for elem in lines]
 
-ID = []
-GX = []
-GY = []
-GZ = []
-AX = []
-AY = []
-AZ = []
-P = []
-R = []
-Y = []
 Long = []
 Lat = []
 Alt = []
-TS = []
-Time = []
+
 for line in lines:
     # print(graph_data)
     if len(line) > 1:
-        _, _, _, _, _, _, _, _, _, _, long, lat, _, _, _ = line.split(',')
+        # _, _, _, _, _, _, _, _, _, _, long, lat, alt, _, _ = line.split(',')
+        _, _, _, _, _, _, _, _, _, lat, long, alt, = line.split(',')
         #  ID.append(float(id))
         Long.append(float(long))
         Lat.append(float(lat))
-        # Alt.append(float(alt))
+        Alt.append(float(alt))
 
 # Create a base map centered at a specific location
 map_center = [-6.89729,107.58]
@@ -42,8 +32,8 @@ for i in range(len(Lat)):
     gps_point = {
         'latitude': Lat[i],
         'longitude': Long[i],
-        # 'altitude': Alt[i]
-        'altitude': 680
+        'altitude': Alt[i]
+        # 'altitude': 680
     }
     gps_data.append(gps_point)
 

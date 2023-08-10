@@ -8,9 +8,9 @@ import math
 quat = Quaternion(axis=[0, 1, 0], angle=math.radians(45))  # Quaternion dengan sumbu rotasi y dan sudut 45 derajat
 
 # Menghitung pitch, roll, dan yaw
-pitch = 45
-roll = 0
-yaw = 0
+pitch = math.radians(0)
+roll = math.radians(0)
+yaw = math.radians(0)
 
 # Membuat titik-titik sudut kubus berdasarkan pitch, roll, yaw
 def create_cube_vertices(pitch, yaw, roll, scale_factor=0.2):
@@ -74,7 +74,7 @@ ax.set_zlim(-1, 1)  # Atur sesuai skala yang diinginkan
 
 # Tambahkan garis sumbu X, Y, dan Z
 ax.plot([0, 1], [0, 0], [0, 0], color='green', linewidth=2)  # Garis sumbu X
-ax.plot([0, 0], [0, -1], [0, 0], color='red', linewidth=2)  # Garis sumbu Y
+ax.plot([0, 0], [0, 1], [0, 0], color='red', linewidth=2)  # Garis sumbu Y
 ax.plot([0, 0], [0, 0], [0, 1], color='blue', linewidth=2)  # Garis sumbu Z
 
 ax.set_xlabel('X')
