@@ -19,7 +19,7 @@ fig.suptitle('Grafik Data', fontsize=8, fontweight='bold')
 
 
 def animate(i):
-    graph_data = open('./local_logs_ardu.csv', 'r').readlines()
+    graph_data = open('./masterTjuy/local_logs_ardu.csv', 'r').readlines()
     lines = graph_data[1:]
     GX = []
     GY = []
@@ -88,7 +88,7 @@ def animate(i):
     ax3.legend()
 
     # Read data from the mqtt_logs_andro.csv file for the fifth subplot (assuming the format is the same)
-    graph_data_andro = open('./mqtt_logs_andro.csv', 'r').readlines()
+    graph_data_andro = open('./masterTjuy/mqtt_logs_andro.csv', 'r').readlines()
     lines_andro = graph_data_andro[1:]
     DataX = []
     DataY = []
