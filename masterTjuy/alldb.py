@@ -5,10 +5,10 @@ import threading
 import os
 import mysql.connector.pooling
 
-if os.path.exists('./masterTjuy/local_logs_ardu.csv'):
-    os.remove('./masterTjuy/local_logs_ardu.csv')
-if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
-    os.remove('./masterTjuy/mqtt_logs_andro.csv')
+if os.path.exists('./KAZ/SERVERLOCAL/local_logs_ardu.csv'):
+    os.remove('./KAZ/SERVERLOCAL/local_logs_ardu.csv')
+if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv'):
+    os.remove('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv')
 
 def create_connection():
     return connection_pool.get_connection()
@@ -58,19 +58,19 @@ def receive_broadcasts(port):
                 data, server_address = client_socket.recvfrom(1024)
                 received_list = json.loads(data.decode('utf-8'))
 
-                # Prepocessing data (data yaw rentang -180 hingga 180)
+                # Preprocessing data (data yaw rentang -180 hingga 180)
                 received_list[8] = normalize_degrees(float(received_list[8]))
 
                 with create_connection() as connection:
                     if port == 50000:
-                        with open('./masterTjuy/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
+                        with open('./KAZ/SERVERLOCAL/mqtt_logs_andro.csv', 'a', newline='') as csvfile:
                             csv_writer = csv.writer(csvfile)
                             normalized_data = received_list.copy()
                             normalized_data[8] = normalize_degrees(float(normalized_data[8]))
                             csv_writer.writerow(normalized_data)
                         insert_data_to_android(connection, [received_list])
                     elif port == 52222:
-                        with open('./masterTjuy/local_logs_ardu.csv', 'a', newline='') as csvfile:
+                        with open('./KAZ/SERVERLOCAL/local_logs_ardu.csv', 'a', newline='') as csvfile:
                             csv_writer = csv.writer(csvfile)
                             normalized_data = received_list.copy()
                             normalized_data[8] = normalize_degrees(float(normalized_data[8]))
