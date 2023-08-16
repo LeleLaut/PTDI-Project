@@ -25,13 +25,13 @@ def receive_broadcasts(port, csv_path):
             csv_writer.writerow(received_list)
 
 port_50000_thread = threading.Thread(target=receive_broadcasts, args=(50000, './KAZ/SERVERLOCAL/mqtt_logs_andro.csv'))
-port_51111_thread = threading.Thread(target=receive_broadcasts, args=(52222, './KAZ/SERVERLOCAL/local_logs_ardu.csv'))
+port_52222_thread = threading.Thread(target=receive_broadcasts, args=(52222, './KAZ/SERVERLOCAL/local_logs_ardu.csv'))
 port_53333_thread = threading.Thread(target=receive_broadcasts, args=(53333, './KAZ/SERVERUP/mqtt_logs_ardu.csv'))
 
 port_50000_thread.start()
-port_51111_thread.start()
+port_52222_thread.start()
 port_53333_thread.start()
 
 port_50000_thread.join()
-port_51111_thread.join()
+port_52222_thread.join()
 port_53333_thread.join()
