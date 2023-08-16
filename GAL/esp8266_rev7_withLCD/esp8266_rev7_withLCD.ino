@@ -381,31 +381,31 @@ void publish() {
   arrayStr_str_yaw_arr += sprintf(arrayStr_str_yaw_arr, "]");
 
   snprintf(msg, MSG_BUFFER_SIZE, "1 %s", str_gyroX_arr);
-  client.publish("Arduino/GYRO X |", msg);
+  client.publish("Telkom/Arduino/GYRO X |", msg);
 
   snprintf(msg, MSG_BUFFER_SIZE, "2 %s", str_gyroY_arr);
-  client.publish("Arduino/GYRO Y |", msg);
+  client.publish("Telkom/Arduino/GYRO Y |", msg);
 
   snprintf(msg, MSG_BUFFER_SIZE, "3 %s", str_gyroZ_arr);
-  client.publish("Arduino/GYRO Z |", msg);
+  client.publish("Telkom/Arduino/GYRO Z |", msg);
 
   snprintf(msg, MSG_BUFFER_SIZE, "4 %s", str_accX_arr);
-  client.publish("Arduino/ACC X |", msg);
+  client.publish("Telkom/Arduino/ACC X |", msg);
 
   snprintf(msg, MSG_BUFFER_SIZE, "5 %s", str_accY_arr);
-  client.publish("Arduino/ACC Y |", msg);
+  client.publish("Telkom/Arduino/ACC Y |", msg);
 
   snprintf(msg, MSG_BUFFER_SIZE, "6 %s", str_accZ_arr);
-  client.publish("Arduino/ACC Z |", msg);
+  client.publish("Telkom/Arduino/ACC Z |", msg);
 
   snprintf(msg, MSG_BUFFER_SIZE, "7 %s", str_pitch_arr);
-  client.publish("Arduino/P |", msg);
+  client.publish("Telkom/Arduino/P |", msg);
 
   snprintf(msg, MSG_BUFFER_SIZE, "8 %s", str_roll_arr);
-  client.publish("Arduino/R |", msg);
+  client.publish("Telkom/Arduino/R |", msg);
 
   snprintf(msg, MSG_BUFFER_SIZE, "9 %s", str_yaw_arr);
-  client.publish("Arduino/Y |", msg);
+  client.publish("Telkom/Arduino/Y |", msg);
 }
 
 void monitoring() {
