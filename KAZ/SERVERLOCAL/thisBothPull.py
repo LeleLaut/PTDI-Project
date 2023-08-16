@@ -67,7 +67,7 @@ def mqtt_client_thread():
     if os.path.exists('./KAZ/SERVERLOCAL/mqtt_logs_android.csv'):
         os.remove('./KAZ/SERVERLOCAL/mqtt_logs_android.csv')
 
-    mqtt_port = 17149
+    mqtt_port = 1883
     ininambah = 0
     list_akhir = []
 
@@ -92,8 +92,80 @@ def mqtt_client_thread():
 
     client = mqtt.Client()
     client.on_message = on_message
-    client.connect('0.tcp.ap.ngrok.io', mqtt_port, 60)
+    client.connect('test.mosquitto.org', mqtt_port, 60)
     client.subscribe([('android', 2)])
+
+    client.loop_start()
+
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        client.loop_stop()
+        client.disconnect()
+
+def third_thread():
+    if os.path.exists('./KAZ/SERVERUP/mqtt_logs_ardu.csv'):
+        os.remove('./KAZ/SERVERUP/mqtt_logs_ardu.csv')
+
+    mqtt_port = 1883
+    udp_broadcast_port = 53333  # New UDP broadcast port
+    ininambah = 0
+
+    subscribed_data = []
+
+    def on_message(client, userdata, message):
+        nonlocal ininambah
+        topic = message.topic
+        payload = message.payload.decode('utf-8')
+        subscribed_data.append(payload)
+        if len(subscribed_data) == 9:
+            subscribed_data.sort()
+            processed_data = [ast.literal_eval(s.split(' ', 1)[1]) for s in subscribed_data]
+
+            num_rows = len(processed_data)
+            num_columns = len(processed_data[0])
+
+            result_lists = [[] for _ in range(num_columns)]
+
+            for i in range(num_rows):
+                for j in range(num_columns):
+                    result_lists[j].append(processed_data[i][j])
+
+            if len(subscribed_data) == 9:
+                with open('./KAZ/SERVERUP/mqtt_logs_ardu.csv', 'a', newline='') as csvfile:
+                    csv_writer = csv.writer(csvfile)
+                    for result_list in result_lists:
+                        result_list.append(ininambah)
+                        ininambah += 1
+                        csv_writer.writerow(result_list)
+
+                # Broadcasting using UDP
+                serialized_data = json.dumps(result_lists)
+                udp_broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                udp_broadcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+                udp_broadcast_socket.sendto(serialized_data.encode('utf-8'), ('<broadcast>', udp_broadcast_port))
+                udp_broadcast_socket.close()
+
+                subscribed_data.clear()
+
+    client = mqtt.Client()
+
+    client.on_message = on_message
+
+    client.connect('test.mosquitto.org', mqtt_port, 60)
+
+    client.subscribe([
+        ('Telkom/Arduino/GYRO X |', 2),
+        ('Telkom/Arduino/GYRO Y |', 2),
+        ('Telkom/Arduino/GYRO Z |', 2),
+        ('Telkom/Arduino/ACC X |', 2),
+        ('Telkom/Arduino/ACC Y |', 2),
+        ('Telkom/Arduino/ACC Z |', 2),
+        ('Telkom/Arduino/P |', 2),
+        ('Telkom/Arduino/R |', 2),
+        ('Telkom/Arduino/Y |', 2),
+    ])
 
     client.loop_start()
 
@@ -107,9 +179,12 @@ def mqtt_client_thread():
 if __name__ == "__main__":
     udp_thread = threading.Thread(target=udp_server_thread)
     mqtt_thread = threading.Thread(target=mqtt_client_thread)
+    third_thread = threading.Thread(target=third_thread)  # New thread
 
     udp_thread.start()
     mqtt_thread.start()
+    third_thread.start()  # Start the new thread
 
     udp_thread.join()
     mqtt_thread.join()
+    third_thread.join()  # Wait for the new thread to complete

@@ -44,15 +44,15 @@ client.on_message = on_message
 
 client.connect('0.tcp.ap.ngrok.io', mqtt_port, 60)
 
-client.subscribe([('Arduino/GYRO X |',2),
-                  ('Arduino/GYRO Y |',2),
-                  ('Arduino/GYRO Z |',2),
-                  ('Arduino/ACC X |',2),
-                  ('Arduino/ACC Y |',2),
-                  ('Arduino/ACC Z |',2),
-                  ('Arduino/P |',2),
-                  ('Arduino/R |',2),
-                  ('Arduino/Y |',2),
+client.subscribe([('Arduino/Telkom/GYRO X |',2),
+                  ('Arduino/Telkom/GYRO Y |',2),
+                  ('Arduino/Telkom/GYRO Z |',2),
+                  ('Arduino/Telkom/ACC X |',2),
+                  ('Arduino/Telkom/ACC Y |',2),
+                  ('Arduino/Telkom/ACC Z |',2),
+                  ('Arduino/Telkom/P |',2),
+                  ('Arduino/Telkom/R |',2),
+                  ('Arduino/Telkom/Y |',2),
                   ])
 
 client.loop_start()

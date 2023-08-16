@@ -26,17 +26,14 @@ mqtt_port=10153
 ininambah=0
 
 list_akhir=[]
-# Callback when the client receives a message from the broker
 def on_message(client, userdata, message):
     global ininambah
     topic = message.topic
     payload = message.payload.decode('utf-8')
-
     formatted_data = f'[{payload.replace("][", "], [")}]'
     list_akhir = json.loads(formatted_data)
 
     if len(list_akhir) == 5:
-        # list_akhir.append(ininambah)
         with open('./KAZ/SERVER LOCAL/mqtt_logs_android.csv', 'a', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             for list_terakhir in list_akhir:
@@ -44,29 +41,15 @@ def on_message(client, userdata, message):
                 list_terakhir.append(ininambah)
                 ininambah+=1
                 serialized_data = json.dumps(list_terakhir)
-                # Broadcast the serialized data to the client
                 server_socket.sendto(serialized_data.encode('utf-8'), (broadcast_address, server_port))
                 print(f"Broadcasted: {serialized_data}")
-
-
         list_akhir.clear()
-        
-# Create an MQTT client instance
+
 client = mqtt.Client()
-
-
-# Set the callback for message reception
 client.on_message = on_message
-
-# Connect to the MQTT broker
 client.connect('0.tcp.ap.ngrok.io', mqtt_port, 60)
-
-# Subscribe to the desired MQTT topic
 client.subscribe([('android',2),
-                  
                   ])
-
-# Start the MQTT network loop to process incoming messages
 client.loop_start()
 
 try:

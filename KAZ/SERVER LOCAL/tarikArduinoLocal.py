@@ -7,24 +7,17 @@ import pickle
 import time
 import json
 
-# Create a UDP socket
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-
-# Bind the socket to a specific IP address and port
-server_ip = '192.168.168.191'  # Bind to all available network interfaces
-server_port = 50000  # Replace with the desired port number
-server_socket.bind((server_ip, server_port))
-
-# Get the broadcast address
-broadcast_address = '192.168.168.255'
-
 if os.path.exists('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv'):
     os.remove('./KAZ/SERVER LOCAL/mqtt_logs_ardu.csv')
 
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+server_ip = '192.168.168.191'
+server_port = 50000
+server_socket.bind((server_ip, server_port))
+broadcast_address = '192.168.168.255'
 mqtt_port=10153
 ininambah=0
-
 subscribed_data = []
 def on_message(client, userdata, message):
     global ininambah
@@ -34,12 +27,9 @@ def on_message(client, userdata, message):
     if len(subscribed_data)==9:
         subscribed_data.sort()
         processed_data = [ast.literal_eval(s.split(' ', 1)[1]) for s in subscribed_data]
-
         num_rows = len(processed_data)
         num_columns = len(processed_data[0])
-
         result_lists = [[] for _ in range(num_columns)]
-
         for i in range(num_rows):
             for j in range(num_columns):
                 result_lists[j].append(processed_data[i][j])
