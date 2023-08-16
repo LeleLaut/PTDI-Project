@@ -2,13 +2,17 @@ import socket
 import json
 import csv
 import threading
+import os
 import mysql.connector.pooling
 
-# Fungsi untuk membuat koneksi dan mengembalikannya dari pool
+if os.path.exists('./masterTjuy/local_logs_ardu.csv'):
+    os.remove('./masterTjuy/local_logs_ardu.csv')
+if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
+    os.remove('./masterTjuy/mqtt_logs_andro.csv')
+
 def create_connection():
     return connection_pool.get_connection()
 
-# Fungsi untuk mengirim data ke tabel 'android'
 def insert_data_to_android(connection, data):
     query = "INSERT INTO android (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, pitch, roll, yaw, latitude, longitude, altitude, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     cursor = connection.cursor()
@@ -18,11 +22,10 @@ def insert_data_to_android(connection, data):
             cursor.execute(query, tuple(values))
         connection.commit()
     except Exception as e:
-        print(f"Error saat memasukkan data ke tabel 'android': {e}")
+        print(f"Error inserting data into 'android' table: {e}")
 
-# Fungsi untuk mengirim data ke tabel 'arduinolocal'
 def insert_data_to_arduinolocal(connection, data):
-    query = "INSERT INTO arduinolocal (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    query = "INSERT INTO arduino (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     cursor = connection.cursor()
     try:
         for item in data:
@@ -31,7 +34,7 @@ def insert_data_to_arduinolocal(connection, data):
             cursor.execute(query, tuple(values))
         connection.commit()
     except Exception as e:
-        print(f"Error saat memasukkan data ke tabel 'arduinolocal': {e}")
+        print(f"Error inserting data into 'arduino' table: {e}")
 
 # Fungsi untuk mengolah data sudut agar nilainya berada dalam rentang -180 hingga 180
 def normalize_degrees(degrees):
@@ -74,9 +77,9 @@ def receive_broadcasts(port):
                             csv_writer.writerow(normalized_data)
                         insert_data_to_arduinolocal(connection, [received_list])
             except Exception as e:
-                print(f"Error saat menerima dan menulis data: {e}")
+                print(f"Error receiving and writing data: {e}")
     except KeyboardInterrupt:
-        print("Menerima data dihentikan.")
+        print("Data reception stopped")
 
 # Main execution
 if __name__ == "__main__":
@@ -105,4 +108,4 @@ if __name__ == "__main__":
         thread_port_mqtt.join()
         thread_port_local.join()
     except Exception as e:
-        print(f"Error utama: {e}")
+        print(f"Main error: {e}")

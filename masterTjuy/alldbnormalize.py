@@ -2,8 +2,14 @@ import socket
 import json
 import csv
 import threading
+import os
 import mysql.connector.pooling
 
+if os.path.exists('./masterTjuy/local_logs_ardu.csv'):
+    os.remove('./masterTjuy/local_logs_ardu.csv')
+if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
+    os.remove('./masterTjuy/mqtt_logs_andro.csv')
+  
 # Function to create and return a connection from the pool
 def create_connection():
     return connection_pool.get_connection()
@@ -22,7 +28,7 @@ def insert_data_to_android(connection, data):
 
 # Function to insert data into the 'arduinolocal' table
 def insert_data_to_arduinolocal(connection, data):
-    query = "INSERT INTO arduinolocal (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    query = "INSERT INTO arduino (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     cursor = connection.cursor()
     try:
         for item in data:
@@ -31,7 +37,7 @@ def insert_data_to_arduinolocal(connection, data):
             cursor.execute(query, tuple(values))
         connection.commit()
     except Exception as e:
-        print(f"Error inserting data into 'arduinolocal' table: {e}")
+        print(f"Error inserting data into 'arduino' table: {e}")
 
 # Function to normalize angle values to the range -180 to 180
 def normalize_degrees(degrees):
@@ -74,7 +80,7 @@ def receive_broadcasts(port):
             except Exception as e:
                 print(f"Error receiving and writing data: {e}")
     except KeyboardInterrupt:
-        print("Data reception stopped.")
+        print("Data reception stopped")
 
 # Main execution
 if __name__ == "__main__":
