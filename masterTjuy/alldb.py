@@ -10,11 +10,9 @@ if os.path.exists('./masterTjuy/local_logs_ardu.csv'):
 if os.path.exists('./masterTjuy/mqtt_logs_andro.csv'):
     os.remove('./masterTjuy/mqtt_logs_andro.csv')
 
-# Fungsi untuk membuat koneksi dan mengembalikannya dari pool
 def create_connection():
     return connection_pool.get_connection()
 
-# Fungsi untuk mengirim data ke tabel 'android'
 def insert_data_to_android(connection, data):
     query = "INSERT INTO android (gyro_x, gyro_y, gyro_z, accel_x, accel_y, accel_z, pitch, roll, yaw, latitude, longitude, altitude, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     cursor = connection.cursor()
@@ -26,7 +24,6 @@ def insert_data_to_android(connection, data):
     except Exception as e:
         print(f"Error inserting data into 'android' table: {e}")
 
-# Fungsi untuk mengirim data ke tabel 'arduinolocal'
 def insert_data_to_arduinolocal(connection, data):
     query = "INSERT INTO arduino (gyro_x, gyro_y, gyro_z, acc_x, acc_y, acc_z, pitch, roll, yaw, counter) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     cursor = connection.cursor()
