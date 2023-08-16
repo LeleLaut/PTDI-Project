@@ -84,9 +84,9 @@ int counter_sdcard = 0;
 // Update these with values suitable for your network.
 const char* ssid = "KAZ";
 const char* password = "modalcokla";
-const char* mqtt_server = "0.tcp.ap.ngrok.io";  // test.mosquitto.org     0.tcp.ap.ngrok.io
-const int mqtt_port = 17149;                    
-unsigned int broadcastPort = 51111;             // UDP
+const char* mqtt_server = "test.mosquitto.org";  // test.mosquitto.org     0.tcp.ap.ngrok.io
+const int mqtt_port = 1883;
+unsigned int broadcastPort = 51111;  // UDP
 
 WiFiUDP udp;
 
@@ -167,7 +167,7 @@ void reconnect() {
 
 void broadcasting() {
   // const char* broadcastData = "Hello from ESP8266!";
-  udp.beginPacket(IPAddress(192, 168, 11, 191), broadcastPort);
+  udp.beginPacket(IPAddress(192, 168, 46, 191), broadcastPort);
   udp.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw);
   udp.endPacket();
 }
@@ -437,25 +437,27 @@ void monitoring() {
 
 
   Serial.print("P : ");
-  Serial.print(angle_pitch);
+  Serial.print(angle_pitch* -1);
 
   Serial.print(" | R : ");
-  Serial.print(angle_roll * -1);
+  Serial.print(angle_roll);
 
   Serial.print(" | Y : ");
   Serial.println(angle_yaw);
 
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.printf("%.2f %.2f", angle_pitch, angle_roll * -1);
+  lcd.printf("%.2f %.2f", angle_pitch* -1, angle_roll);
   lcd.setCursor(0, 1);
   lcd.printf("%.2f", angle_yaw);
+  lcd.setCursor(12, 1);
+  lcd.printf("%d", counter_sdcard);
 }
 
 void saving_data() {
   File dataFile = SD.open("data.txt", FILE_WRITE);
   if (dataFile) {
-    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch, angle_roll * -1, angle_yaw, counter_sdcard);
+    dataFile.printf("%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%d\n", gyroX, gyroY, gyroZ, accX, accY, accZ, angle_pitch* -1, angle_roll, angle_yaw, counter_sdcard);
     dataFile.close();
   }
 
@@ -467,8 +469,8 @@ void saving_data() {
   accY_arr[pencacahArray] = accY;
   accZ_arr[pencacahArray] = accZ;
 
-  pitch_arr[pencacahArray] = angle_pitch;
-  roll_arr[pencacahArray] = angle_roll * -1;
+  pitch_arr[pencacahArray] = angle_pitch* -1;
+  roll_arr[pencacahArray] = angle_roll;
   yaw_arr[pencacahArray] = angle_yaw;
 
   Serial.println(counter_sdcard);

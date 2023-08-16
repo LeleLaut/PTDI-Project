@@ -1,13 +1,13 @@
 #include <Wire.h>
 #include <ESP8266WiFi.h>
-#include <Adafruit_MPU6050.h>
+#include <MPU6050.h>
 
 // Konfigurasi WiFi
-const char* ssid = "GAL";
-const char* password = "gaadayangtau";
+const char* ssid = "KAZ";
+const char* password = "modalcokla";
 
 // Inisialisasi objek MPU6050
-Adafruit_MPU6050 mpu;
+MPU6050 mpu;
 
 void setup() {
   // Mulai komunikasi serial
