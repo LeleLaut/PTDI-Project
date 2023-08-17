@@ -13,7 +13,7 @@ def convert_degrees(degrees):
     return degrees
 
 def animate(i):
-    graph_data = open('arduinoini.csv', 'r').readlines()
+    graph_data = open('arduinobaru.csv', 'r').readlines()
     #graph_data = graph_data.replace('"', '')
     lines = graph_data[1:]  # Skip header line
     lines = [elem.replace('"', '') for elem in lines]
@@ -33,7 +33,7 @@ def animate(i):
     for line in lines:
         # print(graph_data)
         if len(line) > 1:
-            id, x, y, z, x1, y1, z1, p, r, y, t, ts = line.split(';')
+            _, x, y, z, x1, y1, z1, p, r, y, t,_ = line.split(',')
             # ID.append(float(id))
             GX.append(float(x))
             GY.append(float(y))

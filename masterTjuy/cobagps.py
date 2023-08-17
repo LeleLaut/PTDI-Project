@@ -1,7 +1,7 @@
 import folium
 from folium import plugins
 
-graph_data = open('android4.csv', 'r').readlines()
+graph_data = open('androidbaru.csv', 'r').readlines()
 #graph_data = graph_data.replace('"', '')
 lines = graph_data[1:]  # Skip header line
 lines = [elem.replace('"', '') for elem in lines]
@@ -52,4 +52,4 @@ for i in range(len(gps_data) - 1):
     folium.PolyLine(locations=line_points, color='red').add_to(mymap)
 
 # Display the map
-mymap.save("gps_map_with_trackers.html")
+mymap.save("gpstrackers.html")

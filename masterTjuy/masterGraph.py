@@ -6,20 +6,26 @@ from matplotlib import style
 plt.style.use('ggplot')
 
 # Create a figure with 5 subplots
-fig, ((ax3, ax6),(ax2, ax5),(ax1, ax4)) = plt.subplots(3,2, figsize=(8, 6))
-fig.suptitle('Grafik Data', fontsize=8, fontweight='bold')
+# fig, ((ax3, ax6),(ax2, ax5),(ax1, ax4)) = plt.subplots(3,2, figsize=(8, 6))
+# fig.suptitle('Grafik Data', fontsize=8, fontweight='bold')
 # fig, ((ax3, ax7, ax6),(ax2, ax8, ax5),(ax1, ax9, ax4)) = plt.subplots(3,3, figsize=(8, 6))
-# fig, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
-# fig2, ((ax4, ax5, ax6)) = plt.subplots(3,1, figsize=(8, 6))
-# fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
-# fig2.suptitle('Grafik Data Android', fontsize=12, fontweight='bold')
+fig, ((ax1, ax2, ax3)) = plt.subplots(3,1, figsize=(8, 6))
+fig2, ((ax4, ax5, ax6)) = plt.subplots(3,1, figsize=(8, 6))
+fig.suptitle('Grafik Data Arduino', fontsize=12, fontweight='bold')
+fig2.suptitle('Grafik Data Android', fontsize=12, fontweight='bold')
 # fig3.suptitle('Grafik Perbandingan', fontsize=12, fontweight='bold')
 
 # fig, (ax6) = plt.subplots(3,1, figsize=(8, 6))
 
+def convert_degrees(degrees):
+    while degrees > 180:
+        degrees -= 360
+    while degrees < -180:
+        degrees += 360
+    return degrees
 
 def animate(i):
-    graph_data = open('./masterTjuy/local_logs_ardu.csv', 'r').readlines()
+    graph_data = open("F:\KULIAH\PTDI\PTDI-Project\masterTjuy\local_logs_ardu.csv", 'r').readlines()
     lines = graph_data[1:]
     GX = []
     GY = []
@@ -58,6 +64,8 @@ def animate(i):
     Y = Y[-10:]
     Time = Time[-10:]
 
+    Y_converted = [convert_degrees(y) for y in Y]
+
     ax1.clear()
     ax1.plot(Time, GX, label='GX', marker='.')
     ax1.plot(Time, GY, label='GY', marker='.')
@@ -80,15 +88,15 @@ def animate(i):
     ax3.clear()
     ax3.plot(Time, P, label='Pitch', marker='.')
     ax3.plot(Time, R, label='Roll', marker='.')
-    ax3.plot(Time, Y, label='Yaw', marker='.')
-    ax3.set_ylim(-360, 360)
-    ax3.set_title('Arduino')
+    ax3.plot(Time, Y_converted, label='Yaw', marker='.')
+    ax3.set_ylim(-180, 180)
+    # ax3.set_title('Arduino')
     ax3.set_ylabel("Nilai")
     ax3.set_xlabel("TimeStamp (s)")
     ax3.legend()
 
     # Read data from the mqtt_logs_andro.csv file for the fifth subplot (assuming the format is the same)
-    graph_data_andro = open('./masterTjuy/mqtt_logs_andro.csv', 'r').readlines()
+    graph_data_andro = open('F:\KULIAH\PTDI\PTDI-Project\masterTjuy\mqtt_logs_andro.csv', 'r').readlines()
     lines_andro = graph_data_andro[1:]
     DataX = []
     DataY = []
@@ -132,6 +140,8 @@ def animate(i):
     Y_andro = Y_andro[-10:]
     Time_andro = Time_andro[-10:]
 
+    Y_aconverted = [convert_degrees(y) for y in Y_andro]
+
     ax4.clear()
     ax4.plot(Time_andro, DataX, label='DataX', marker='.')
     ax4.plot(Time_andro, DataY, label='DataY', marker='.')
@@ -153,8 +163,8 @@ def animate(i):
     ax6.clear()
     ax6.plot(Time_andro, P_andro, label='Pitch', marker='.')
     ax6.plot(Time_andro, R_andro, label='Roll', marker='.')
-    ax6.plot(Time_andro, Y_andro, label='Yaw', marker='.')
-    ax6.set_ylim(-360, 360)
+    ax6.plot(Time_andro, Y_aconverted, label='Yaw', marker='.')
+    ax6.set_ylim(-180, 180)
     ax6.set_ylabel("Nilai")
     ax6.set_xlabel("TimeStamp (s)")
     ax6.set_title('Android')
@@ -189,7 +199,7 @@ open('mqtt_logs.csv', 'w').close()
 open('mqtt_logs_andro.csv', 'w').close()  # Create and clear the mqtt_logs_andro.csv file
 
 timestamp = -1
-ani = animation.FuncAnimation(fig, animate, interval=1000)
+ani = animation.FuncAnimation(fig, animate, interval=500)
 
 while True:
     # generate_random_data(timestamp)

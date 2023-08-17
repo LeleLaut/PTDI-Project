@@ -82,7 +82,7 @@ def animate(i):
     ax3.legend()
 
 # Create the animation outside the animate function
-ani = animation.FuncAnimation(fig, animate, interval=1000)
+ani = animation.FuncAnimation(fig, animate, interval=500)
 
 # Show the plot
 plt.show()

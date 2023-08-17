@@ -13,7 +13,7 @@ def convert_degrees(degrees):
     return degrees
 
 def animate(i):
-    graph_data = open('android3.csv', 'r').readlines()
+    graph_data = open('android6.csv', 'r').readlines()
     #graph_data = graph_data.replace('"', '')
     lines = graph_data[1:]  # Skip header line
     lines = [elem.replace('"', '') for elem in lines]

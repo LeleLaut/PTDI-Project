@@ -29,14 +29,6 @@ def create_cube_vertices(pitch, yaw, roll, scale_factor=0.2):
 
     return rotated_vertices
 
-def read_data_from_file(filename):
-    with open(filename, 'r') as file:
-        data = file.readline().strip().split(',')
-        pitch, roll, yaw = map(float, map(str.strip, data))
-        return pitch, roll, yaw
-
-data_filename = 'datas.txt'
-
 # Initialize the plot
 fig = plt.figure(figsize=(10, 8))
 ax = fig.add_subplot(111, projection='3d')
@@ -66,9 +58,27 @@ def init():
     return line,
 
 def animate(i):
-    pitch, roll, yaw = read_data_from_file(data_filename)
+    graph_data = open('android4.csv', 'r').readlines()
+    graph_data = graph_data[1:]
+    P = []
+    R = []
+    Y = []
+    for Dline in graph_data:
+        # print(graph_data)
+        if len(Dline) > 1:
+            _, _, _, _, _, _, p, r, y, _,_,_ = Dline.split(',')
+            # ID.append(float(id))
+            P.append(float(p))
+            R.append(float(r))
+            Y.append(float(y))
+            # TS.append(float(ts))
+
+    Pitch = math.radians(P[i])
+    Roll = math.radians(R[i])
+    Yaw = math.radians(Y[i])
+
     
-    cube_vertices = create_cube_vertices(pitch, roll, yaw, scale_factor=0.2)
+    cube_vertices = create_cube_vertices(Pitch, Roll, Yaw, scale_factor=0.2)
     
     center = np.mean(cube_vertices, axis=0)
     cube_vertices -= center
@@ -90,9 +100,9 @@ def animate(i):
     line.set_data(cube_vertices[[0, 1, 2, 3, 0], 0], cube_vertices[[0, 1, 2, 3, 0], 1])
     line.set_3d_properties(cube_vertices[[0, 1, 2, 3, 0], 2])
     
-    ax.view_init(azim=30, elev=30)  # Adjust the view angle if needed
+    ax.view_init(azim=0, elev=30)  # Adjust the view angle if needed
     return line,
 
 # Animate the plot
-ani = FuncAnimation(fig, animate, frames=np.arange(0, 360, 10), init_func=init, blit=True)
+ani = FuncAnimation(fig, animate, frames=1000, init_func=init, blit=True, interval=50)
 plt.show()
