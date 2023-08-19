@@ -63,6 +63,11 @@ def animate(i):
     # TS = TS[-10:]
     Time = Time[i_minus_10:i+1]
     Y_converted = [convert_degrees(y) for y in Y]
+    print (Y_converted)
+    point_Y = Y_converted[-1]
+    point_R = R[-1]
+    point_P = Y[-1]
+    Point_Time = Time[-1]
 
     ax1.clear()
     ax1.plot(Time, GX, label='GX', marker='.')
@@ -91,6 +96,9 @@ def animate(i):
     ax3.set_ylabel("Nilai")
     ax3.set_xlabel("TimeStamp (s)")
     ax3.legend()
+    ax3.text( Point_Time, point_P,  f'({point_P})', ha='right', va='bottom')
+    ax3.text( Point_Time, point_R, f'({point_R})', ha='right', va='bottom')
+    ax3.text( Point_Time, point_Y, f'({point_Y})', ha='right', va='bottom')
 
 hz = int(input("Berapa Hz :"))
 intv = 1/hz * 1000

@@ -69,8 +69,31 @@ def animate(i):
     Time = Time[i_minus_10:i]
     # Long = Long[i_minus_10:i]
     # Lat = Lat[i_minus_10:i]
+    
 
     Y_converted = [convert_degrees(y) for y in Y]
+
+    if len(Y_converted) == 0:
+        point_Y = 0
+    else :
+        point_Y = Y_converted[-1]
+    
+    if len(R) == 0:
+        point_R = 0
+    else :
+        point_R = R[-1]
+
+    if len(P) == 0:
+        print("mas")
+        point_P = 0
+    else :
+        point_P = P[-1]
+
+    if len(Time) == 0:
+        print("mas")
+        Point_Time = 0
+    else :
+        Point_Time = Time[-1]
 
     ax1.clear()
     ax1.plot(Time, GX, label='GX', marker='.')
@@ -99,6 +122,9 @@ def animate(i):
     ax3.set_ylabel("Nilai")
     ax3.set_xlabel("TimeStamp (s)")
     ax3.legend()
+    ax3.text( Point_Time, point_P,  f'({point_P})', ha='right', va='bottom')
+    ax3.text( Point_Time, point_R, f'({point_R})', ha='right', va='bottom')
+    ax3.text( Point_Time, point_Y, f'({point_Y})', ha='right', va='bottom')
 
 
 
